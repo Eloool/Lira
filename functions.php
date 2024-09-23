@@ -2,12 +2,11 @@
 function db_connect() {
     // Remplacer par les informations de connexion
     $dsn = 'mysql:host=localhost;dbname=lira';
-    /* A ajouter a la base de donnée si on veux augementé la sécu mais pas nécessaire*/
-    // $user = 'votre_utilisateur';
-    // $password = 'votre_mot_de_passe';
+    $user = 'root';
+    $password = '';
 
     try {
-        $pdo = new PDO($dsn /*, $user, $password*/);
+        $pdo = new PDO($dsn, $user, $password);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $pdo;
     } catch (PDOException $e) {
@@ -37,8 +36,6 @@ function get_user_tasks($pdo, $user_id) {
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
     $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);   
-
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-    
 ?>
