@@ -25,21 +25,29 @@ $user_tasks = get_user_tasks($pdo, $user_id); // Tâches de l'utilisateur connec
 
     <h2>Tous les projets</h2>
     <table>
-        <thead>
+    <thead>
+        <tr>
+            <th>Nom du projet</th>
+            <th>Tâches</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($all_projects as $project) : ?>
             <tr>
-                <th>Nom du projet</th>
-                <th>Équipe</th>
-                </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($all_projects as $project) : ?>
-                <tr>
-                    <td><?= $project['nom_projet'] ?></td>
-                    <td><?= $project['equipe'] ?></td>
-                    </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+                <td><?= htmlspecialchars($project['NomEq']) ?></td>
+                <td>
+                    <ul>
+                        <?php foreach ($user_tasks as $task) : ?>
+                            <?php if ($task['IdEq'] == $project['IdEq']) : ?>
+                                <li><?= htmlspecialchars($task['TitreT']) ?></li>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </ul>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
 
     <?php if ($user_id) : ?>
         <h2>Votre tableau de bord</h2>

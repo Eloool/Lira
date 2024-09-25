@@ -22,7 +22,10 @@ function get_all_projects($pdo) {
 }
 
 function get_user_projects($pdo, $user_id) {
-    $sql = "SELECT * FROM equipesprj WHERE IdEq = :user_id";
+    $sql = "SELECT * 
+            FROM equipesprj
+            JOIN rolesutilisateurprojet ON rolesutilisateurprojet.IdEq = equipesprj.IdEq
+            WHERE rolesutilisateurprojet.IdU = :user_id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
     $stmt->execute();
@@ -32,7 +35,10 @@ function get_user_projects($pdo, $user_id) {
 function get_user_tasks($pdo, $user_id) {
     // Cette fonction nécessitera une requête SQL plus complexe en fonction de la structure de votre table "taches"
     // Supposons une table "taches" avec les colonnes : id, titre, description, id_projet, id_utilisateur
-    $sql = "SELECT * FROM taches WHERE IdEq = :user_id";
+    $sql = "SELECT * 
+            FROM taches
+            JOIN sprintbacklog ON sprintbacklog.IdT = taches.IdT
+            WHERE sprintbacklog.IdU = :user_id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
     $stmt->execute();
