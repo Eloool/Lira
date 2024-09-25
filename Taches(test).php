@@ -8,6 +8,7 @@
 </head>
 <body>
     <?php
+    include 'header.php';
     $mysqli = @new mysqli("localhost", "root", "", "agiletools");
     $requete = "SELECT Etat,idEtat FROM etatstaches";
     $resultat = $mysqli->query($requete, MYSQLI_USE_RESULT );
