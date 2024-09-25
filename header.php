@@ -4,8 +4,10 @@
             <img src="logo.png" alt="Logo" class="logo">
         </div>
         <h1 class="title">LIRA</h1>
-        <div>
+        <div class="buttons">
+            <form action="acceuil.php">
             <button class="button">Accueil</button>
+            </form>
             <button class="button">Déconnexion</button>
         </div>
     </header>
