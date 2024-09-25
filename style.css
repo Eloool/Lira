@@ -3,12 +3,16 @@
     padding:0px;
 }
 footer {
+    margin-top: auto;
     text-align: center;
     padding: 5px;
     background-color: #26baba;
     color: #000;
   }
   body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     font-family: Arial, sans-serif;
 }
 .header {
