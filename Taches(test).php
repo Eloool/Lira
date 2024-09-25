@@ -19,7 +19,8 @@
         echo "</select>";
     }
     ?>
-</select>
-</select>
+    <?php
+    include 'footer.php';
+    ?>
 </body>
 </html>
