@@ -489,10 +489,10 @@ DELIMITER ;
 
 
 
-DROP TRIGGER IF EXISTS check_admin;
+DROP TRIGGER IF EXISTS check_admin_insert;
 DELIMITER $$
 
-CREATE TRIGGER check_admin
+CREATE TRIGGER check_admin_insert
 BEFORE INSERT ON utilisateurs
 FOR EACH ROW
 BEGIN
@@ -506,11 +506,34 @@ BEGIN
 
     IF new.IsAdmin=True AND nb_admin > 0 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Il ne peut y avoir qu'un seul administrateur.';
+        SET MESSAGE_TEXT = 'Il ne peut y avoir qu\'un seul administrateur.';
     END IF;
 END$$
 
 DELIMITER ;
+DROP TRIGGER IF EXISTS check_admin_update;
+DELIMITER $$
+
+CREATE TRIGGER check_admin_update
+BEFORE UPDATE ON utilisateurs
+FOR EACH ROW
+BEGIN
+    DECLARE nb_admin INT;
+
+    SET nb_admin = (
+        SELECT COUNT(*)
+        FROM utilisateurs
+        WHERE utilisateurs.IsAdmin = TRUE
+    );
+
+    IF new.IsAdmin=True AND nb_admin > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Il ne peut y avoir qu\'un seul administrateur.';
+    END IF;
+END$$
+
+DELIMITER ;
+
 
 -- procedure pour avoir la somme des cout des taches d'un sprint
 DROP PROCEDURE IF EXISTS  Velo_Total_Sprint  ;
