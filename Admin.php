@@ -23,7 +23,9 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
 if (!$user || $user['is_admin'] != 1) {
-    echo "Accès refusé. Vous devez être administrateur pour accéder à cette page.";
+    echo '<div style="background-color: #0055A4;color: white;padding: 15px;border-radius: 5px;text-align: center;font-weight: bold;box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">Accès refusé. Vous devez être administrateur pour accéder à cette page.</div>';
+    header("refresh:3;url=connexion.php");
     exit();
 }
 
@@ -79,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Gestion des utilisateurs</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="Admin.css">
 </head>
 <body>
 

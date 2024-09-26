@@ -53,10 +53,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Vérifier si l'utilisateur est un administrateur
             if ($row['is_admin'] == 1) {
-                echo "Connexion réussie en tant qu'administrateur. Redirection vers la page d'administration...";
+                echo '<div style="background-color: #0055A4;color: white;padding: 15px;border-radius: 5px;text-align: center;font-weight: bold;box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">Connexion réussie en tant qu\'administrateur. Redirection vers la page d\'administration...</div>';
                 header("refresh:3;url=Admin.php");  // Redirection vers la page admin après 3 secondes
             } else {
-                echo "Connexion réussie. Bienvenue, $nom $prenom!";
+                echo '<div style="background-color: #0055A4;color: white;padding: 15px;border-radius: 5px;text-align: center;font-weight: bold;box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">Connexion réussie. Bienvenue, $nom $prenom!</div>';
                 header("refresh:3;url=Acceuil.php");  // Redirection vers la page d'accueil après 3 secondes
             }
             exit();  // Terminer le script pour éviter que le reste de la page ne s'exécute
