@@ -501,10 +501,10 @@ BEGIN
     SET nb_admin = (
         SELECT COUNT(*)
         FROM utilisateurs
-        WHERE utilisateurs.IsAdmin = TRUE
+        WHERE utilisateurs.is_admin = TRUE
     );
 
-    IF new.IsAdmin=True AND nb_admin > 0 THEN
+    IF new.is_admin=True AND nb_admin > 0 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Il ne peut y avoir qu\'un seul administrateur.';
     END IF;
@@ -523,10 +523,10 @@ BEGIN
     SET nb_admin = (
         SELECT COUNT(*)
         FROM utilisateurs
-        WHERE utilisateurs.IsAdmin = TRUE
+        WHERE utilisateurs.is_admin = TRUE
     );
 
-    IF new.IsAdmin=True AND nb_admin > 0 THEN
+    IF new.is_admin=True AND nb_admin > 0 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Il ne peut y avoir qu\'un seul administrateur.';
     END IF;
