@@ -21,19 +21,6 @@ SET time_zone = "+00:00";
 -- Base de données : `lira`
 --
 
-DELIMITER $$
---
--- Procédures
---
-CREATE DEFINER=`root`@`localhost` PROCEDURE `Velo_Total_Sprint` (IN `Id_Sprint` INT)   BEGIN
-SELECT SUM(CoutT)
-FROM sprintbacklog
-INNER JOIN taches ON sprintbacklog.IdT=taches.IdT
-WHERE IdS=Id_Sprint AND CoutT!='?' AND CoutT!='999';
-END$$
-
-DELIMITER ;
-
 -- --------------------------------------------------------
 
 --
