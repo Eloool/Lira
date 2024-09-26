@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : mer. 25 sep. 2024 à 10:18
+-- Généré le : jeu. 26 sep. 2024 à 16:53
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -18,8 +18,21 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données : `agiletools`
+-- Base de données : `lira`
 --
+
+DELIMITER $$
+--
+-- Procédures
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `Velo_Total_Sprint` (IN `Id_Sprint` INT)   BEGIN
+SELECT SUM(CoutT)
+FROM sprintbacklog
+INNER JOIN taches ON sprintbacklog.IdT=taches.IdT
+WHERE IdS=Id_Sprint AND CoutT!='?' AND CoutT!='999';
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -214,6 +227,18 @@ INSERT INTO `sprintbacklog` (`IdT`, `IdS`, `IdU`, `IdEtat`) VALUES
 (11, 6, 11, 3),
 (12, 6, 12, 4);
 
+--
+-- Déclencheurs `sprintbacklog`
+--
+DELIMITER $$
+CREATE TRIGGER `taches` AFTER INSERT ON `sprintbacklog` FOR EACH ROW BEGIN
+    UPDATE sprints
+    SET VelociteEq = Velo_Total_Sprint(NEW.IdS)
+    WHERE IdS = NEW.IdS;
+END
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -243,6 +268,23 @@ INSERT INTO `sprints` (`IdS`, `DateDebS`, `DateFinS`, `RetrospectiveS`, `RevueS`
 (6, '2024-11-16', '2024-11-30', 'Focus sur la performance', 'Version stable livrée', 6, 90),
 (7, '2024-12-01', '2024-12-15', 'Réduction du nombre de bugs', 'Version finale livrée', 7, 100),
 (8, '2024-12-16', '2024-12-31', 'Satisfaction des utilisateurs améliorée', 'Patch final livré', 8, 110);
+
+--
+-- Déclencheurs `sprints`
+--
+DELIMITER $$
+CREATE TRIGGER `check_date` BEFORE INSERT ON `sprints` FOR EACH ROW BEGIN
+    SET @Date_From=new.DateDebS;
+    SET @Date_To=new.DateFinS;
+
+    IF (@Date_From>@Date_To) THEN
+    SET new.DateFinS=@Date_From;
+    SET new.DateDebS=@Date_To;
+
+END IF ;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -283,35 +325,34 @@ INSERT INTO `taches` (`IdT`, `TitreT`, `UserStoryT`, `IdEq`, `CoutT`, `IdPriorit
 -- Structure de la table `utilisateurs`
 --
 
-
 CREATE TABLE `utilisateurs` (
-  `IdU` smallint(6) NOT NULL AUTO_INCREMENT,
+  `IdU` smallint(6) NOT NULL,
   `NomU` varchar(50) NOT NULL,
   `PrenomU` varchar(50) NOT NULL,
   `MotDePasseU` varchar(255) NOT NULL,
   `SpecialiteU` enum('Développeur','Modeleur','Animateur','UI','IA','WebComm','Polyvalent') NOT NULL DEFAULT 'Polyvalent',
-  `is_admin` TINYINT(1) DEFAULT 0,
-  PRIMARY KEY (`IdU`)
+  `is_admin` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `utilisateurs`
 --
 
-INSERT INTO `utilisateurs` (`NomU`, `PrenomU`, `MotDePasseU`, `SpecialiteU`, `is_admin`) VALUES
-('Dupont', 'Jean', 'password123', 'Développeur', 0),
-('Martin', 'Marie', 'pass456', 'UI', 0),
-('Durand', 'Pierre', 'secure789', 'Polyvalent', 0),
-('Lemoine', 'Sophie', 'testuser', 'IA', 0),
-('Petit', 'Clara', 'mypassword', 'WebComm', 0),
-('Roche', 'Nicolas', 'devpass', 'Développeur', 0),
-('Moreau', 'Isabelle', 'secure321', 'Modeleur', 0),
-('Fabre', 'Thomas', 'designUI', 'UI', 0),
-('Bernard', 'Laura', 'polyvalent22', 'Polyvalent', 0),
-('Girard', 'Luc', 'scripted', 'Animateur', 0),
-('Mercier', 'Alexandre', 'animation123', 'Animateur', 0),
-('Blanc', 'Julie', 'project567', 'Polyvalent', 0),
-('JDO', 'JDO', 'JDO', 'Admin', 1); -- L'utilisateur JDO avec le rôle d'admin
+INSERT INTO `utilisateurs` (`IdU`, `NomU`, `PrenomU`, `MotDePasseU`, `SpecialiteU`, `is_admin`) VALUES
+(1, 'Dupont', 'Jean', '$2y$10$odAVbifDyOofCjnD4AahMOmKvggSaRRmPP0VLPsJpROKi.pWzhxje', 'Développeur', 0),
+(2, 'Martin', 'Marie', '$2y$10$.YUW4DfqJPB/RJC0C5nkOOYJmBHX2OtX7d6lYaH1jvs6OcTik9uSG', 'UI', 0),
+(3, 'Durand', 'Pierre', '$2y$10$3R4PDx2ukqdw0QZbvdnAhOa7xKyoToRD355ob0zrQLRhDnrlHooOy', 'Polyvalent', 0),
+(4, 'Lemoine', 'Sophie', '$2y$10$Upq.LJVS0dOrKhF28fe3qutOUQTatYJgmmVxdIzd1/C5G6WHnkfyW', 'IA', 0),
+(5, 'Petit', 'Clara', '$2y$10$JDI1pA50q5KFvQheE4UNOuR6HN/DP7vOItftvi3ix1AwssCvsvloi', 'WebComm', 0),
+(6, 'Roche', 'Nicolas', '$2y$10$Eb3GC9XBcWxPxgscIaeuxO2iXc0av495R85METqlhjay7U8hPdM.2', 'Développeur', 0),
+(7, 'Moreau', 'Isabelle', '$2y$10$gmDEOGjRGHMu8102x.3nQOkc7PnZAf2rMOoW/diL5wd9K4.oAVQ8W', 'Modeleur', 0),
+(8, 'Fabre', 'Thomas', '$2y$10$k487SKVTg6DP2bxzoeiKuuuIM2Sq1Si8RM2tOdahiX8DemxwuToyO', 'UI', 0),
+(9, 'Bernard', 'Laura', '$2y$10$YNm1yzUSdWj5wJpibH7cw.vE1CpYEywe.OG1lnjPIafcAuhiCHGIe', 'Polyvalent', 0),
+(10, 'Girard', 'Luc', '$2y$10$3MpoCCv03o1iHhsKjmTwv.6rDV.ET2dqc9YJIugEmXhOvRQ91WXV2', 'Animateur', 0),
+(11, 'Mercier', 'Alexandre', '$2y$10$sTlIAf1o7/n/IWMtUgmKvuDq0ezHCmio1c1UOltaNrukc9fe7rnnG', 'Animateur', 0),
+(12, 'Blanc', 'Julie', '$2y$10$VJ7VtJbacS5ayc6BQFf9j.UEJWL2bkZO6IGmeH6B.Shfzy5J37Ll.', 'Polyvalent', 0),
+(13, 'JDO', 'JDO', '$2y$10$PzO/zdodF3DP/7KLR1vHUu37OcJjRgQRefXy.f9dKom3beTHDsV.6', 'Animateur', 1),
+(14, 'oui', 'oui', '$2y$10$VrnlmMX76zTjD0y.GUPA/O/idnOUlNqNbnlNkqlx/3vBi0Ksda0Zq', 'Développeur', 0);
 
 --
 -- Index pour les tables déchargées
@@ -385,6 +426,18 @@ ALTER TABLE `taches`
 --
 -- Index pour la table `utilisateurs`
 --
+ALTER TABLE `utilisateurs`
+  ADD PRIMARY KEY (`IdU`);
+
+--
+-- AUTO_INCREMENT pour les tables déchargées
+--
+
+--
+-- AUTO_INCREMENT pour la table `utilisateurs`
+--
+ALTER TABLE `utilisateurs`
+  MODIFY `IdU` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Contraintes pour les tables déchargées
@@ -431,7 +484,6 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
 
 
 --
@@ -509,4 +561,3 @@ BEGIN
     WHERE IdS = NEW.IdS;
 END$$
 DELIMITER ;
-
