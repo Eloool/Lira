@@ -1,0 +1,73 @@
+/* Global reset for margins, paddings, and box-sizing */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #0055A4; /* Bleu français */
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2em;
+}
+
+/* Form styling */
+form {
+    background-color: #FFF;
+    color: #0055A4; /* Texte bleu français */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+label {
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+    color: #0055A4;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #0055A4;
+    border-radius: 5px;
+}
+
+input[type="submit"] {
+    background-color: #0055A4;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+input[type="submit"]:hover {
+    background-color: #FFCC00; /* Jaune doré au survol */
+}
+
+/* Responsiveness */
+@media (max-width: 400px) {
+    form {
+        width: 90%;
+    }
+}
