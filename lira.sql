@@ -29,7 +29,8 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `equipesprj` (
   `IdEq` smallint(11) NOT NULL,
-  `NomEq` varchar(100) NOT NULL
+  `NomEq` varchar(100) NOT NULL,
+  `descProj` VARCHAR(55)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -217,14 +218,6 @@ INSERT INTO `sprintbacklog` (`IdT`, `IdS`, `IdU`, `IdEtat`) VALUES
 --
 -- Déclencheurs `sprintbacklog`
 --
-DELIMITER $$
-CREATE TRIGGER `taches` AFTER INSERT ON `sprintbacklog` FOR EACH ROW BEGIN
-    UPDATE sprints
-    SET VelociteEq = Velo_Total_Sprint(NEW.IdS)
-    WHERE IdS = NEW.IdS;
-END
-$$
-DELIMITER ;
 
 -- --------------------------------------------------------
 
