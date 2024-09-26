@@ -72,3 +72,20 @@ input[type="submit"]:hover {
         width: 90%;
     }
 }
+
+.admin-message {
+    background-color: #0055A4; 
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    margin: 20px 0;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.admin-message:hover {
+    background-color: #FFCC00; /* Jaune doré au survol */
+    color: #0055A4; /* Change le texte en bleu français */
+}
