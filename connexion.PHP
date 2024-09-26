@@ -23,15 +23,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Erreur de connexion à la base de données: " . $conn->connect_error);
     }
 
-    // Préparer la requête SQL
-    $sql = "SELECT * FROM utilisateurs WHERE NomU = ? AND PrenomU = ? AND MotDePAsseU = ?";
+    // Préparer la requête SQL pour récupérer l'utilisateur
+    $sql = "SELECT * FROM utilisateurs WHERE NomU = ? AND PrenomU = ?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
         die("Erreur dans la requête SQL: " . $conn->error);
     }
 
-    $stmt->bind_param("sss", $nom, $prenom, $password);
+    $stmt->bind_param("ss", $nom, $prenom);
     $stmt->execute();
 
     // Récupérer le résultat
@@ -43,14 +43,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Vérifier si l'utilisateur existe
     if ($result->num_rows > 0) {
-        // Définir un cookie valable 7 jours
-        setcookie("username", $nom, time() + (7 * 24 * 60 * 60), "/");
+        // L'utilisateur existe, on récupère ses informations
+        $row = $result->fetch_assoc();
 
-        echo "Connexion réussie. Bienvenue, $nom $prenom!";
-        header("refresh:3;url=accueil.php");  // Redirection après 3 secondes vers accueil.php
-        exit();  // Terminer le script pour éviter que le reste de la page ne s'exécute
+        // Vérifier si le mot de passe est correct
+        if (password_verify($password, $row['MotDePasseU'])) {
+            // Définir un cookie valable 7 jours
+            setcookie("username", $nom, time() + (7 * 24 * 60 * 60), "/");
+
+            // Vérifier si l'utilisateur est un administrateur
+            if ($row['is_admin'] == 1) {
+                echo "Connexion réussie en tant qu'administrateur. Redirection vers la page d'administration...";
+                header("refresh:3;url=Admin.php");  // Redirection vers la page admin après 3 secondes
+            } else {
+                echo "Connexion réussie. Bienvenue, $nom $prenom!";
+                header("refresh:3;url=Acceuil.php");  // Redirection vers la page d'accueil après 3 secondes
+            }
+            exit();  // Terminer le script pour éviter que le reste de la page ne s'exécute
+        } else {
+            echo "Mot de passe incorrect.";
+        }
     } else {
-        echo "Nom, prénom ou mot de passe incorrect.";
+        echo "Nom ou prénom incorrect.";
     }
 }
 ?>
@@ -61,19 +75,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="connexion.css">
 </head>
 <body>
 
 <h2>Page de connexion</h2>
 <form method="POST" action="connexion.php">
-    <label for="nom">Nom:</label>
+    <label for="nom">Nom :</label>
     <input type="text" id="nom" name="nom" value="<?php echo htmlspecialchars($username); ?>" required><br>
 
-    <label for="prenom">Prénom:</label>
+    <label for="prenom">Prénom :</label>
     <input type="text" id="prenom" name="prenom" required><br>
 
-    <label for="password">Mot de passe:</label>
+    <label for="password">Mot de passe :</label>
     <input type="password" id="password" name="password" required><br>
 
     <input type="submit" value="Se connecter">
