@@ -1,27 +1,58 @@
 <?php
     include "accueil.php";
     echo "<p>Page project owner</p><br>";
- ?>
+?>
    <!-- Définition du projet : desc app finale, attente du client -->
-    <button class="button">Définir projet</button>
+   <!-- Besoin d'ajouter la colonne :
+        ALTER TABLE equipesprj
+        ADD descProj VARCHAR(55); -->
+
     <form method="POST">
-        <input type="text" name="name"><br>
-        <input type="text" name="email"><br>
-        <button type="submit">Submit</button>
+        <br>Définition du projet<br>
+        <textarea name="defProj" rows="5" cols="50"></textarea><br>
+        <button type="submit">Valider</button>
+        <br><br><br>
     </form>
 
     <?php
-    $mon_nom = $_POST['name'];
-    $mon_mail = $_POST['email'];
+        $idEq = 1; //il faut récup l'id du projet actuel
+        $defProj = $_POST['defProj'] ?? null;
 
-    echo "Votre nom : $mon_nom<br>";
-    echo "Votre mail : $mon_mail<br>";
+        if ($defProj !== null) {
+            $defProj = $conn->real_escape_string($defProj);
+            $sql = "UPDATE equipesprj
+                    SET descProj = '$defProj'
+                    WHERE IdEq = $idEq";
+        
+            if ($conn->query($sql) === FALSE) {
+                echo "Erreur lors de l'ajout : " . $conn->error;
+            }
+        }
     ?>
 
+    <!-- Saisie revues de sprint -->
+    <form method="POST">
+        <br>Saisie revues de sprint<br>
+        <textarea name="revSpr" rows="5" cols="50"></textarea><br>
+        <button type="submit">Valider</button>
+        <br><br><br>
+    </form>
 
+    <?php
+        $idSpr = 1; //il faut récup l'id du sprint actuel
+        $revSpr = $_POST['revSpr'] ?? null;
 
-    <button class="button">Créer le product backlog</button>
-    <button class="button">Saisir revues sprint</button>
-    <button class="button">Gérer bac à sable</button>
+        if ($revSpr !== null) {
+            $revSpr = $conn->real_escape_string($revSpr);
+            $sql = "UPDATE sprints
+                    SET RevueS = '$revSpr'
+                    WHERE IdS = $idSpr";
+        
+            if ($conn->query($sql) === FALSE) {
+                echo "Erreur lors de l'ajout : " . $conn->error;
+            }
+        }
+        $conn->close();
+    ?>
 
 <!-- A CONTINUER -->
