@@ -273,7 +273,7 @@ DELIMITER ;
 --
 
 CREATE TABLE `taches` (
-  `IdT` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `IdT` int(11) NOT NULL AUTO_INCREMENT,
   `TitreT` varchar(50) NOT NULL,
   `UserStoryT` varchar(300) NOT NULL,
   `IdEq` smallint(6) NOT NULL,
