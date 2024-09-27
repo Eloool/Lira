@@ -277,8 +277,8 @@ CREATE TABLE `taches` (
   `TitreT` varchar(50) NOT NULL,
   `UserStoryT` varchar(300) NOT NULL,
   `IdEq` smallint(6) NOT NULL,
-  `CoutT` enum('?','1','3','5','10','15','25','999') NOT NULL DEFAULT '?',
-  `IdPriorite` tinyint(1) NOT NULL
+  `CoutT` enum('?','1','3','5','10','15','25','999') DEFAULT '?',
+  `IdPriorite` tinyint(1)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
