@@ -2,12 +2,13 @@
 function Suppr_cookie(){
     // Suppression du cookie de username
     if(isset($_COOKIE['username'])){
-        setcookie('username');
+        
         unset($_COOKIE['username']);
+        setcookie('username', '', time() - 4200, '/');
         header("Location: connexion.php");
-    }
-    
+    } 
 }
+//Si appui sur le button déconnextion alors lance la fonction Suppr_cookie
 if (isset($_GET['push_deconnextion'])) {
     Suppr_cookie();
 }
