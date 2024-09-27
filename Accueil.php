@@ -1,18 +1,23 @@
 <?php
+session_start();  // Assure-toi que la session est bien démarrée
 require_once 'functions.php';
 
-// Récupération de l'utilisateur connecté (à adapter selon la méthode d'authentification)
+// Récupération de l'utilisateur connecté
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
 // Connexion à la base de données
-$pdo = db_connect();
+$conn = db_connect();
 
-// Récupération des données
-$all_projects = get_all_projects($pdo); // Tous les projets
-$user_projects = get_user_projects($pdo, $user_id); // Projets de l'utilisateur connecté
-$user_tasks = get_user_tasks($pdo, $user_id); // Tâches de l'utilisateur connecté
-
-// Affichage du contenu HTML
+if ($user_id) {
+    // Récupération des données de l'utilisateur
+    $all_projects = get_all_projects($conn); // Tous les projets
+    $user_projects = get_user_projects($conn, $user_id); // Projets de l'utilisateur connecté
+    $user_tasks = get_user_tasks($conn, $user_id); // Tâches de l'utilisateur connecté
+} else {
+    // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
+    header("Location: login.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -26,31 +31,47 @@ $user_tasks = get_user_tasks($pdo, $user_id); // Tâches de l'utilisateur connec
     <h2>Tous les projets</h2>
     <table>
     <thead>
+    <tr>
+        <th>Nom du projet</th>
+    </tr>
+</thead>
+<tbody>
+    <?php foreach ($all_projects as $project) : ?>
         <tr>
-            <th>Nom du projet</th>
-            <th>Tâches</th>
+            <td><?= htmlspecialchars($project['NomEq']) ?></td>
         </tr>
-    </thead>
-    <tbody>
-        <?php foreach ($all_projects as $project) : ?>
-            <tr>
-                <td><?= htmlspecialchars($project['NomEq']) ?></td>
-                <td>
-                    <ul>
-                        <?php foreach ($user_tasks as $task) : ?>
-                            <?php if ($task['IdEq'] == $project['IdEq']) : ?>
-                                <li><?= htmlspecialchars($task['TitreT']) ?></li>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </ul>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </tbody>
+    <?php endforeach; ?>
+</tbody>
+
 </table>
 
-    <?php if ($user_id) : ?>
-        <h2>Votre tableau de bord</h2>
+    <?php
+    if ($user_id) : ?>
+        <h2>Votre tableau de bord personnel</h2>
+        <table>
+        <thead>
+            <tr>
+                <th>Nom du projet</th>
+                <th>Vos tâches</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($user_projects as $project) : ?>
+                <tr>
+                    <td><?= htmlspecialchars($project['NomEq']) ?></td>
+                    <td>
+                        <ul>
+                            <?php foreach ($user_tasks as $task) : ?>
+                                <?php if ($task['IdEq'] == $project['IdEq']) : ?>
+                                    <li><?= htmlspecialchars($task['TitreT']) ?></li>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </ul>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+        </table>
         <?php endif; ?>
 </body>
 </html>

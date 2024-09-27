@@ -1,47 +1,120 @@
 <?php
 function db_connect() {
-    // Remplacer par les informations de connexion
-    $dsn = 'mysql:host=localhost;dbname=lira';
-    $user = 'root';
-    $password = '';
+    // Informations de connexion
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "lira";
 
-    try {
-        $pdo = new PDO($dsn, $user, $password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $pdo;
-    } catch (PDOException $e) {
-        echo "Erreur de connexion à la base de données : " . $e->getMessage();
+    // Création de la connexion avec mysqli
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    // Vérification des erreurs de connexion
+    if ($conn->connect_error) {
+        die("Échec de la connexion : " . $conn->connect_error);
+    }
+
+    // Retourner l'objet de connexion si tout va bien
+    return $conn;
+}
+
+function get_all_projects($conn) {
+    // Requête SQL
+    $sql = "SELECT * FROM equipesprj";
+
+    // Préparation et exécution de la requête
+    if ($stmt = $conn->prepare($sql)) {
+        $stmt->execute();
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+
+        // Récupération de tous les enregistrements sous forme de tableau associatif
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        // Gestion de l'erreur si la requête échoue
+        die("Erreur dans la requête : " . $conn->error);
     }
 }
 
-function get_all_projects($pdo) {
-    $sql = "SELECT * FROM equipesprj";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-function get_user_projects($pdo, $user_id) {
+function get_user_projects($conn, $user_id) {
+    // Requête SQL avec un paramètre
     $sql = "SELECT * 
             FROM equipesprj
             JOIN rolesutilisateurprojet ON rolesutilisateurprojet.IdEq = equipesprj.IdEq
-            WHERE rolesutilisateurprojet.IdU = :user_id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            WHERE rolesutilisateurprojet.IdU = ?";
+
+    // Préparation de la requête
+    if ($stmt = $conn->prepare($sql)) {
+        // Liaison du paramètre (le ? correspond à $user_id)
+        $stmt->bind_param('i', $user_id);
+
+        // Exécution de la requête
+        $stmt->execute();
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+
+        // Récupération des enregistrements sous forme de tableau associatif
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        // Gestion de l'erreur si la requête échoue
+        die("Erreur dans la requête : " . $conn->error);
+    }
 }
 
-function get_user_tasks($pdo, $user_id) {
-    // Cette fonction nécessitera une requête SQL plus complexe en fonction de la structure de votre table "taches"
-    // Supposons une table "taches" avec les colonnes : id, titre, description, id_projet, id_utilisateur
+
+function get_user_tasks($conn, $user_id) {
+    // Requête SQL pour récupérer les tâches d'un utilisateur donné
     $sql = "SELECT * 
             FROM taches
             JOIN sprintbacklog ON sprintbacklog.IdT = taches.IdT
-            WHERE sprintbacklog.IdU = :user_id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            WHERE sprintbacklog.IdU = ?";
+
+    // Préparation de la requête
+    if ($stmt = $conn->prepare($sql)) {
+        // Liaison du paramètre (le ? correspond à $user_id)
+        $stmt->bind_param('i', $user_id);
+
+        // Exécution de la requête
+        $stmt->execute();
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+
+        // Récupération des enregistrements sous forme de tableau associatif
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        // Gestion de l'erreur si la requête échoue
+        die("Erreur dans la requête : " . $conn->error);
+    }
 }
+
+function get_tasks_by_project($conn, $project_id) {
+    // Requête SQL pour récupérer les tâches liées à un projet spécifique
+    $sql = "SELECT * 
+            FROM taches
+            JOIN sprintbacklog ON sprintbacklog.IdT = taches.IdT
+            WHERE sprintbacklog.IdEq = ?";
+
+    // Préparation de la requête
+    if ($stmt = $conn->prepare($sql)) {
+        // Liaison du paramètre (le ? correspond à $project_id)
+        $stmt->bind_param('i', $project_id);
+
+        // Exécution de la requête
+        $stmt->execute();
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+
+        // Récupération des enregistrements sous forme de tableau associatif
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        // Gestion de l'erreur si la requête échoue
+        die("Erreur dans la requête : " . $conn->error);
+    }
+}
+
+
 ?>
