@@ -61,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"> 
                 Connexion réussie. Bienvenue, ' . htmlspecialchars($nom) . ' ' . 
                 htmlspecialchars($prenom) . '!</div>';
-                header("refresh:3;url=accueil.php");  
+                header("refresh:3;url=Acceuil.php");  
             }
             exit();  // Terminer le script pour éviter que le reste de la page ne s'exécute
         } else {
