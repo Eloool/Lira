@@ -5,7 +5,11 @@
     box-sizing: border-box;
 }
 
-body {
+body{
+    
+}
+
+.main {
     font-family: Arial, sans-serif;
     background-color: #0055A4; /* Bleu français */
     color: white;
@@ -80,3 +84,34 @@ p {
     margin-bottom: 20px;
     text-align: center;
 }
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+.logo {
+    width: 50px; /* Adjust size as needed */
+    height: 50px;
+}
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+.button {
+    margin-left: 10px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.button:hover {
+    background-color: #0056b3;
+}
+  

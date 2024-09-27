@@ -84,7 +84,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
     <link rel="stylesheet" href="Admin.css">
 </head>
 <body>
-
+    <?php
+    include 'header.php';
+    ?>
+<div class="main">
 <h2>Création d'un nouvel utilisateur</h2>
 <?php if (!empty($message)) { echo "<p>$message</p>"; } ?>
 <form method="POST" action="Admin.php">
@@ -141,7 +144,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
 
     <input type="submit" name="update_user" value="Mettre à jour l'utilisateur">
 </form>
-
+</div>
 </body>
 </html>
  
