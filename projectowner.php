@@ -52,7 +52,7 @@
                 echo "Erreur lors de l'ajout : " . $conn->error;
             }
         }
-        $conn->close();
+
+       include "creation_pb.php"; 
     ?>
 
-<!-- A CONTINUER -->
