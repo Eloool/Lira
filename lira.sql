@@ -273,7 +273,7 @@ DELIMITER ;
 --
 
 CREATE TABLE `taches` (
-  `IdT` int(11) NOT NULL AUTO_INCREMENT,
+  `IdT` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `TitreT` varchar(50) NOT NULL,
   `UserStoryT` varchar(300) NOT NULL,
   `IdEq` smallint(6) NOT NULL,
@@ -399,7 +399,6 @@ ALTER TABLE `sprints`
 -- Index pour la table `taches`
 --
 ALTER TABLE `taches`
-  ADD PRIMARY KEY (`IdT`),
   ADD KEY `IdPriorite` (`IdPriorite`),
   ADD KEY `IndexIdEq` (`IdEq`);
 
