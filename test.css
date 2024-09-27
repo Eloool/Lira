@@ -1,0 +1,63 @@
+/* Global reset for margins, paddings, and box-sizing */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+header, footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #0055A4; /* Bleu drapeau français */
+    color: white;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header {
+    justify-content: space-between;
+}
+
+.logo img {
+    height: 50px;
+}
+
+.title {
+    font-size: 2em;
+    font-weight: bold;
+    margin-left: 40px;
+}
+
+/* Styles for text-only buttons */
+.button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 20px;
+    margin-right: 40px;
+    transition: color 0.3s ease;
+}
+
+.button:hover {
+    color: #FFCC00; /* Couleur jaune au survol, pour un bon contraste */
+}
+
+footer {
+    justify-content: center;
+    position: fixed;
+    bottom: 0;
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+}
+
+footer h3 {
+    font-size: 1em;
+}
