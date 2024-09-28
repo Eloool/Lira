@@ -334,6 +334,43 @@ INSERT INTO `utilisateurs` (`IdU`, `NomU`, `PrenomU`, `MotDePasseU`, `Specialite
 (13, 'JDO', 'JDO', '$2y$10$PzO/zdodF3DP/7KLR1vHUu37OcJjRgQRefXy.f9dKom3beTHDsV.6', 'Animateur', 1),
 (14, 'oui', 'oui', '$2y$10$VrnlmMX76zTjD0y.GUPA/O/idnOUlNqNbnlNkqlx/3vBi0Ksda0Zq', 'Développeur', 0);
 
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `PlanningPoker`
+--
+
+CREATE TABLE `planningpoker` (
+    `IdPok` smallint(6) AUTO_INCREMENT,
+    `IdEq` smallint(6) NOT NULL,
+    `Statut` ENUM('En attente', 'En cours', 'Terminé') NOT NULL DEFAULT 'Terminé'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ParticipantsPoker`
+--
+
+CREATE TABLE `participantspoker` (
+    `IdPok` smallint(6),
+    `IdU` smallint(6)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `EstimationTaches`
+--
+
+CREATE TABLE `estimationtaches` (
+    `IdE` smallint(6) AUTO_INCREMENT,
+    `IdT` smallint(6),
+    `IdU` smallint(6),
+    `Estimation` INT NOT NULL,
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Index pour les tables déchargées
 --
@@ -410,6 +447,29 @@ ALTER TABLE `utilisateurs`
   ADD PRIMARY KEY (`IdU`);
 
 --
+-- Index pour la table `planningpoker`
+--
+ALTER TABLE `planningpoker`
+  ADD PRIMARY KEY (`IdPok`),
+  ADD KEY `IdEq` (`IqEq`)
+
+--
+-- Index pour la table `participantspoker`
+--
+ALTER TABLE `participantspoker`
+  ADD PRIMARY KEY (`IdPok`,`IdU`),
+  ADD KEY `IdPok` (`IdPok`),
+  ADD KEY `IdU` (`IdU`)
+
+--
+-- Index pour la table `estimationtaches`
+--
+ALTER TABLE `estimationtaches`
+  ADD PRIMARY KEY (`IdE`),
+  ADD KEY `IdT` (`IdT`),
+  ADD KEY `IdU` (`IdU`)
+
+--
 -- AUTO_INCREMENT pour les tables déchargées
 --
 
@@ -459,6 +519,27 @@ ALTER TABLE `sprints`
 ALTER TABLE `taches`
   ADD CONSTRAINT `FK_TachesEquipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`),
   ADD CONSTRAINT `FK_Taches_Priorite` FOREIGN KEY (`IdPriorite`) REFERENCES `prioritestaches` (`idPriorite`);
+
+--
+-- Contraintes pour la table `planningpoker`
+--
+ALTER TABLE `planningpoker`
+  ADD CONSTRAINT `FK_Poker_Projet` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`);
+
+--
+-- Contraintes pour la table `participantspoker`
+--
+ALTER TABLE `participantspoker`
+  ADD CONSTRAINT `FK_Participant_Poker` FOREIGN KEY (`IdPok`) REFERENCES `planningpoker` (`IdPok`),
+  ADD CONSTRAINT `FK_Participant_User` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`);
+
+--
+-- Contraintes pour la table `estimationtaches`
+--
+ALTER TABLE `estimationtaches`
+  ADD CONSTRAINT `FK_Tache_Estimation` FOREIGN KEY (`IdT`) REFERENCES `taches` (`IdT`),
+  ADD CONSTRAINT `FK_User_Estimation` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`);
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
