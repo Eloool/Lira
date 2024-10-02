@@ -33,12 +33,14 @@ if ($user_id) {
     <thead>
     <tr>
         <th>Nom du projet</th>
+        <th>Description</th>
     </tr>
 </thead>
 <tbody>
     <?php foreach ($all_projects as $project) : ?>
         <tr>
             <td><?= htmlspecialchars($project['NomEq']) ?></td>
+            <td><?= htmlspecialchars($project['descProj']) ?></td>
         </tr>
     <?php endforeach; ?>
 </tbody>
