@@ -7,7 +7,6 @@
 </head>
 <body>
 
-
 <?php
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
@@ -24,7 +23,6 @@ if ( $mysqli->connect_errno ) {
     " errDesc=". $mysqli -> connect_error;
  exit();
  }
-
 
 // Fonction pour ajouter un utilisateur
 function ajouterUtilisateur($nom, $prenom, $mot_de_passe, $specialite) {
@@ -83,17 +81,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
         echo "Erreur lors de la mise à jour de l'utilisateur : " . $conn->error;
     }
 }
-
-
 // Si le formulaire est soumis, mettre à jour l'utilisateur
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Nomeq"])) {
     $NomPrj = $_POST["Nomeq"];
 
     ajouterUtilisateur($NomPrj);
 }
-
-
-
 
 // Fonction pour ajouter une équipe et affecter un Scrum Master avec son rôle
 function ajouterEquipeEtAffecterRoles($NomEq, $IdScrumMaster) {
@@ -196,11 +189,8 @@ if (!$stmtUsers->execute()) {
 
 $resultUsers = $stmtUsers->get_result();    
 
-
-
 $mysqli->close(); 
 ?>
-
     <div>
         <p><b><u>Tableau de bord des activités</u></b></p>
     </div>
@@ -232,7 +222,6 @@ $mysqli->close();
         <input type="submit" value="Ajouter un nouvel utilisateur">
 
     </form>
-    
     <!-- Formulaire pour modifier un utilisateur -->
     <form action="" method="POST" >
     <h3>Mise à jour d'un utilisateur existant</h3>
@@ -254,8 +243,6 @@ $mysqli->close();
     <input type="submit" value="Mettre à jour l'utilisateur">
 </form>
     
-
-
 <!-- Formulaire pour ajouter une équipe -->
 <form method="POST">
     <h3> Ajouter une équipe + ScrumMaster</h3>
