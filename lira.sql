@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `equipesprj` (
-  `IdEq` smallint(11) NOT NULL,
+  `IdEq` smallint(11) PRIMARY KEY NOT NULL  AUTO_INCREMENT,
   `NomEq` varchar(100) NOT NULL,
   `descProj` VARCHAR(55)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -80,7 +80,7 @@ INSERT INTO `etatstaches` (`IdEtat`, `DescEtat`) VALUES
 --
 
 CREATE TABLE `idees_bac_a_sable` (
-  `Id_Idee_bas` int(11) NOT NULL,
+  `Id_Idee_bas` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `desc_Idee_bas` varchar(300) NOT NULL,
   `IdU` smallint(6) NOT NULL,
   `IdEq` smallint(6) NOT NULL
@@ -161,7 +161,7 @@ INSERT INTO `roles` (`IdR`, `DescR`) VALUES
 --
 
 CREATE TABLE `rolesutilisateurprojet` (
-  `IdU` smallint(6) NOT NULL,
+  `IdU` smallint(6) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `IdR` varchar(6) NOT NULL,
   `IdEq` smallint(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -191,7 +191,7 @@ INSERT INTO `rolesutilisateurprojet` (`IdU`, `IdR`, `IdEq`) VALUES
 --
 
 CREATE TABLE `sprintbacklog` (
-  `IdT` int(11) NOT NULL,
+  `IdT` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `IdS` smallint(6) NOT NULL,
   `IdU` smallint(6) NOT NULL,
   `IdEtat` smallint(6) NOT NULL
@@ -226,7 +226,7 @@ INSERT INTO `sprintbacklog` (`IdT`, `IdS`, `IdU`, `IdEtat`) VALUES
 --
 
 CREATE TABLE `sprints` (
-  `IdS` smallint(6) NOT NULL,
+  `IdS` smallint(6) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `DateDebS` date NOT NULL,
   `DateFinS` date NOT NULL,
   `RetrospectiveS` varchar(300) DEFAULT NULL,
@@ -273,7 +273,7 @@ DELIMITER ;
 --
 
 CREATE TABLE `taches` (
-  `IdT` int(11) NOT NULL,
+  `IdT` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `TitreT` varchar(50) NOT NULL,
   `UserStoryT` varchar(300) NOT NULL,
   `IdEq` smallint(6) NOT NULL,
@@ -306,7 +306,7 @@ INSERT INTO `taches` (`IdT`, `TitreT`, `UserStoryT`, `IdEq`, `CoutT`, `IdPriorit
 --
 
 CREATE TABLE `utilisateurs` (
-  `IdU` smallint(6) NOT NULL,
+  `IdU` smallint(6) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `NomU` varchar(50) NOT NULL,
   `PrenomU` varchar(50) NOT NULL,
   `MotDePasseU` varchar(255) NOT NULL,
@@ -341,8 +341,6 @@ INSERT INTO `utilisateurs` (`IdU`, `NomU`, `PrenomU`, `MotDePasseU`, `Specialite
 --
 -- Index pour la table `equipesprj`
 --
-ALTER TABLE `equipesprj`
-  ADD PRIMARY KEY (`IdEq`);
 
 --
 -- Index pour la table `etatstaches`
@@ -354,7 +352,7 @@ ALTER TABLE `etatstaches`
 -- Index pour la table `idees_bac_a_sable`
 --
 ALTER TABLE `idees_bac_a_sable`
-  ADD PRIMARY KEY (`Id_Idee_bas`),
+  
   ADD KEY `IdU` (`IdU`),
   ADD KEY `IdEq` (`IdEq`);
 
@@ -374,7 +372,6 @@ ALTER TABLE `roles`
 -- Index pour la table `rolesutilisateurprojet`
 --
 ALTER TABLE `rolesutilisateurprojet`
-  ADD PRIMARY KEY (`IdR`,`IdEq`),
   ADD KEY `IdR` (`IdR`),
   ADD KEY `IdEq` (`IdEq`),
   ADD KEY `FK_RoleUtil_Utilisateurs` (`IdU`);
@@ -383,7 +380,6 @@ ALTER TABLE `rolesutilisateurprojet`
 -- Index pour la table `sprintbacklog`
 --
 ALTER TABLE `sprintbacklog`
-  ADD PRIMARY KEY (`IdT`),
   ADD KEY `IdS` (`IdS`),
   ADD KEY `IdU` (`IdU`),
   ADD KEY `IdEtat` (`IdEtat`);
@@ -392,22 +388,18 @@ ALTER TABLE `sprintbacklog`
 -- Index pour la table `sprints`
 --
 ALTER TABLE `sprints`
-  ADD PRIMARY KEY (`IdS`),
   ADD KEY `IdEq` (`IdEq`);
 
 --
 -- Index pour la table `taches`
 --
 ALTER TABLE `taches`
-  ADD PRIMARY KEY (`IdT`),
   ADD KEY `IdPriorite` (`IdPriorite`),
   ADD KEY `IndexIdEq` (`IdEq`);
 
 --
 -- Index pour la table `utilisateurs`
 --
-ALTER TABLE `utilisateurs`
-  ADD PRIMARY KEY (`IdU`);
 
 --
 -- AUTO_INCREMENT pour les tables déchargées
@@ -416,8 +408,6 @@ ALTER TABLE `utilisateurs`
 --
 -- AUTO_INCREMENT pour la table `utilisateurs`
 --
-ALTER TABLE `utilisateurs`
-  MODIFY `IdU` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Contraintes pour les tables déchargées
