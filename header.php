@@ -7,6 +7,9 @@
         <a href="projectowner.php">
             <button class="button">Page PO</button>
         </a>
+        <a href="scrummaster.php">
+            <button class="button">Page SM</button>
+        </a>
         <button class="button">Déconnexion</button>
     </div>
 </header>
