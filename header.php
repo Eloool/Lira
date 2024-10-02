@@ -20,7 +20,7 @@ if (isset($_GET['push_deconnextion'])) {
         <h1 class="title">LIRA</h1>
         <div>
             <button class="button">Accueil</button>
-            <a  href='header.php?push_deconnextion=true'>
+            <a href='header.php?push_deconnextion=true'>
             <button class="button">Déconnexion</button>
         </a>
             
