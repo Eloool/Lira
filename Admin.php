@@ -9,6 +9,10 @@
 <body>
 
 <?php
+include 'header.php';
+?>
+<div class="admin">
+<?php
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 
@@ -258,6 +262,6 @@ $mysqli->close();
         <input type="submit" value="Ajouter Équipe">
     </form>
 
-
+</div>
 </body> 
 </html>
