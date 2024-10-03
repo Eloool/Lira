@@ -60,10 +60,10 @@ function get_taches_for_user_by_project($conn,$user_id,$project_id){
         die("Erreur dans la requête : " . $conn->error);
     }
 }
-$ID_user = 2;
-$project_id = 2;
+$ID_user = 3;
+$project_id = 3;
 $taches = get_taches_for_user_by_project($conn,$ID_user,$project_id);
-
+$Roleuser = get_roles_for_user_for_project($conn,$ID_user,$project_id)[0]['IdR'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -105,12 +105,20 @@ $taches = get_taches_for_user_by_project($conn,$ID_user,$project_id);
         <td><?= htmlspecialchars($tache['TitreT']) ?></td>
     </tr>
 <?php endforeach; ?>
-
+<a href="ppvote.php">
 <?php
-if(get_roles_for_user_for_project($conn,$ID_user,$project_id)[0]['IdR']==='PO'){
+if($Roleuser==='SM'){
+    echo "Lancer Planning Poker";
+}
+else{
+    echo "Participer au Planning Poker";
+}
+echo "</a>";
+
+if($Roleuser==='PO'){
     include 'projectowner.php';
 }
-if(get_roles_for_user_for_project($conn,$ID_user,$project_id)[0]['IdR']==='SM'){
+if($Roleuser==='SM'){
     include 'projectowner.php';
 }
 ?>
