@@ -336,40 +336,50 @@ INSERT INTO `utilisateurs` (`IdU`, `NomU`, `PrenomU`, `MotDePasseU`, `Specialite
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `PlanningPoker`
---
-
-CREATE TABLE `planningpoker` (
-    `IdPok` smallint(6) AUTO_INCREMENT,
-    `IdEq` smallint(6) NOT NULL,
-    `Statut` ENUM('En attente', 'En cours', 'Terminé') NOT NULL DEFAULT 'Terminé'
+CREATE TABLE `planning_poker_sessions` (
+  `IdSession` int(11) NOT NULL AUTO_INCREMENT,
+  `IdEq` smallint(6) NOT NULL, -- L'équipe/projet concerné
+  `IdScrumMaster` smallint(6) NOT NULL, -- Le ScrumMaster qui a créé la session
+  `Status` enum('waiting', 'in_progress', 'finished') NOT NULL DEFAULT 'waiting', -- Status de la session
+  `DateCreation` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`IdSession`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `ParticipantsPoker`
---
-
-CREATE TABLE `participantspoker` (
-    `IdPok` smallint(6),
-    `IdU` smallint(6)
+CREATE TABLE `planning_poker_participants` (
+  `IdSession` int(11) NOT NULL, -- Référence à la session de Planning Poker
+  `IdU` smallint(6) NOT NULL, -- Référence à l'utilisateur participant
+  `HasVoted` tinyint(1) NOT NULL DEFAULT 0, -- Indique si l'utilisateur a déjà voté pour une tâche
+  `Vote` int(11) DEFAULT NULL, -- Valeur du vote de l'utilisateur pour la tâche en cours
+  PRIMARY KEY (`IdSession`, `IdU`),
+  FOREIGN KEY (`IdSession`) REFERENCES `planning_poker_sessions`(`IdSession`) ON DELETE CASCADE,
+  FOREIGN KEY (`IdU`) REFERENCES `utilisateurs`(`IdU`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `EstimationTaches`
---
-
-CREATE TABLE `estimationtaches` (
-    `IdE` smallint(6) AUTO_INCREMENT,
-    `IdT` smallint(6),
-    `IdU` smallint(6),
-    `Estimation` INT NOT NULL,
+CREATE TABLE `planning_poker_taches` (
+  `IdSession` int(11) NOT NULL, -- Référence à la session de Planning Poker
+  `IdT` int(11) NOT NULL, -- Référence à la tâche en question
+  `CoutFinal` int(11) DEFAULT NULL, -- Coût final calculé après les votes
+  `Status` enum('pending', 'voting', 'evaluated') NOT NULL DEFAULT 'pending', -- Status de la tâche dans la session
+  PRIMARY KEY (`IdSession`, `IdT`),
+  FOREIGN KEY (`IdSession`) REFERENCES `planning_poker_sessions`(`IdSession`) ON DELETE CASCADE,
+  FOREIGN KEY (`IdT`) REFERENCES `taches`(`IdT`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+CREATE TABLE `votes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NOT NULL,
+  `user_id` smallint(6) NOT NULL,
+  `cost` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`task_id`) REFERENCES `taches`(`IdT`),
+  FOREIGN KEY (`user_id`) REFERENCES `utilisateurs`(`IdU`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Index pour les tables déchargées
@@ -447,29 +457,6 @@ ALTER TABLE `utilisateurs`
   ADD PRIMARY KEY (`IdU`);
 
 --
--- Index pour la table `planningpoker`
---
-ALTER TABLE `planningpoker`
-  ADD PRIMARY KEY (`IdPok`),
-  ADD KEY `IdEq` (`IqEq`)
-
---
--- Index pour la table `participantspoker`
---
-ALTER TABLE `participantspoker`
-  ADD PRIMARY KEY (`IdPok`,`IdU`),
-  ADD KEY `IdPok` (`IdPok`),
-  ADD KEY `IdU` (`IdU`)
-
---
--- Index pour la table `estimationtaches`
---
-ALTER TABLE `estimationtaches`
-  ADD PRIMARY KEY (`IdE`),
-  ADD KEY `IdT` (`IdT`),
-  ADD KEY `IdU` (`IdU`)
-
---
 -- AUTO_INCREMENT pour les tables déchargées
 --
 
@@ -519,26 +506,6 @@ ALTER TABLE `sprints`
 ALTER TABLE `taches`
   ADD CONSTRAINT `FK_TachesEquipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`),
   ADD CONSTRAINT `FK_Taches_Priorite` FOREIGN KEY (`IdPriorite`) REFERENCES `prioritestaches` (`idPriorite`);
-
---
--- Contraintes pour la table `planningpoker`
---
-ALTER TABLE `planningpoker`
-  ADD CONSTRAINT `FK_Poker_Projet` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`);
-
---
--- Contraintes pour la table `participantspoker`
---
-ALTER TABLE `participantspoker`
-  ADD CONSTRAINT `FK_Participant_Poker` FOREIGN KEY (`IdPok`) REFERENCES `planningpoker` (`IdPok`),
-  ADD CONSTRAINT `FK_Participant_User` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`);
-
---
--- Contraintes pour la table `estimationtaches`
---
-ALTER TABLE `estimationtaches`
-  ADD CONSTRAINT `FK_Tache_Estimation` FOREIGN KEY (`IdT`) REFERENCES `taches` (`IdT`),
-  ADD CONSTRAINT `FK_User_Estimation` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`);
 
 COMMIT;
 
