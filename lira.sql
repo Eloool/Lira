@@ -28,9 +28,10 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `equipesprj` (
-  `IdEq` smallint(11) NOT NULL,
+  `IdEq` smallint(11) PRIMARY KEY NOT NULL  AUTO_INCREMENT,
   `NomEq` varchar(100) NOT NULL,
-  `descProj` VARCHAR(55)
+  `descProj` VARCHAR(55),
+  `PP` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -80,7 +81,7 @@ INSERT INTO `etatstaches` (`IdEtat`, `DescEtat`) VALUES
 --
 
 CREATE TABLE `idees_bac_a_sable` (
-  `Id_Idee_bas` int(11) NOT NULL,
+  `Id_Idee_bas` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `desc_Idee_bas` varchar(300) NOT NULL,
   `IdU` smallint(6) NOT NULL,
   `IdEq` smallint(6) NOT NULL
@@ -161,7 +162,7 @@ INSERT INTO `roles` (`IdR`, `DescR`) VALUES
 --
 
 CREATE TABLE `rolesutilisateurprojet` (
-  `IdU` smallint(6) NOT NULL,
+  `IdU` smallint(6) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `IdR` varchar(6) NOT NULL,
   `IdEq` smallint(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -191,7 +192,7 @@ INSERT INTO `rolesutilisateurprojet` (`IdU`, `IdR`, `IdEq`) VALUES
 --
 
 CREATE TABLE `sprintbacklog` (
-  `IdT` int(11) NOT NULL,
+  `IdT` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `IdS` smallint(6) NOT NULL,
   `IdU` smallint(6) NOT NULL,
   `IdEtat` smallint(6) NOT NULL
@@ -226,7 +227,7 @@ INSERT INTO `sprintbacklog` (`IdT`, `IdS`, `IdU`, `IdEtat`) VALUES
 --
 
 CREATE TABLE `sprints` (
-  `IdS` smallint(6) NOT NULL,
+  `IdS` smallint(6) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `DateDebS` date NOT NULL,
   `DateFinS` date NOT NULL,
   `RetrospectiveS` varchar(300) DEFAULT NULL,
@@ -273,12 +274,13 @@ DELIMITER ;
 --
 
 CREATE TABLE `taches` (
-  `IdT` int(11) NOT NULL,
+  `IdT` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `TitreT` varchar(50) NOT NULL,
   `UserStoryT` varchar(300) NOT NULL,
   `IdEq` smallint(6) NOT NULL,
   `CoutT` enum('?','1','3','5','10','15','25','999') NOT NULL DEFAULT '?',
-  `IdPriorite` tinyint(1) NOT NULL
+  `IdPriorite` tinyint(1) NOT NULL,
+  `VotePP` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -306,12 +308,13 @@ INSERT INTO `taches` (`IdT`, `TitreT`, `UserStoryT`, `IdEq`, `CoutT`, `IdPriorit
 --
 
 CREATE TABLE `utilisateurs` (
-  `IdU` smallint(6) NOT NULL,
+  `IdU` smallint(6) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `NomU` varchar(50) NOT NULL,
   `PrenomU` varchar(50) NOT NULL,
   `MotDePasseU` varchar(255) NOT NULL,
   `SpecialiteU` enum('Développeur','Modeleur','Animateur','UI','IA','WebComm','Polyvalent') NOT NULL DEFAULT 'Polyvalent',
-  `is_admin` tinyint(1) DEFAULT 0
+  `is_admin` tinyint(1) DEFAULT 0,
+  `is_connected` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -334,52 +337,24 @@ INSERT INTO `utilisateurs` (`IdU`, `NomU`, `PrenomU`, `MotDePasseU`, `Specialite
 (13, 'JDO', 'JDO', '$2y$10$PzO/zdodF3DP/7KLR1vHUu37OcJjRgQRefXy.f9dKom3beTHDsV.6', 'Animateur', 1),
 (14, 'oui', 'oui', '$2y$10$VrnlmMX76zTjD0y.GUPA/O/idnOUlNqNbnlNkqlx/3vBi0Ksda0Zq', 'Développeur', 0);
 
+
+
+
 -- --------------------------------------------------------
 
-CREATE TABLE `planning_poker_sessions` (
-  `IdSession` int(11) NOT NULL AUTO_INCREMENT,
-  `IdEq` smallint(6) NOT NULL, -- L'équipe/projet concerné
-  `IdScrumMaster` smallint(6) NOT NULL, -- Le ScrumMaster qui a créé la session
-  `Status` enum('waiting', 'in_progress', 'finished') NOT NULL DEFAULT 'waiting', -- Status de la session
-  `DateCreation` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`IdSession`)
+--
+-- Structure de la table `VoterPP`
+--
+
+CREATE TABLE `VoterPP` (
+  `IdU` smallint(6) NOT NULL,
+  `IdT` int(11) NOT NULL,
+  `estimationCout` enum('?','1','3','5','10','15','25','999') NOT NULL DEFAULT '?',
+  PRIMARY KEY (`IdU`, `IdT`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
-CREATE TABLE `planning_poker_participants` (
-  `IdSession` int(11) NOT NULL, -- Référence à la session de Planning Poker
-  `IdU` smallint(6) NOT NULL, -- Référence à l'utilisateur participant
-  `HasVoted` tinyint(1) NOT NULL DEFAULT 0, -- Indique si l'utilisateur a déjà voté pour une tâche
-  `Vote` int(11) DEFAULT NULL, -- Valeur du vote de l'utilisateur pour la tâche en cours
-  PRIMARY KEY (`IdSession`, `IdU`),
-  FOREIGN KEY (`IdSession`) REFERENCES `planning_poker_sessions`(`IdSession`) ON DELETE CASCADE,
-  FOREIGN KEY (`IdU`) REFERENCES `utilisateurs`(`IdU`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
-
-CREATE TABLE `planning_poker_taches` (
-  `IdSession` int(11) NOT NULL, -- Référence à la session de Planning Poker
-  `IdT` int(11) NOT NULL, -- Référence à la tâche en question
-  `CoutFinal` int(11) DEFAULT NULL, -- Coût final calculé après les votes
-  `Status` enum('pending', 'voting', 'evaluated') NOT NULL DEFAULT 'pending', -- Status de la tâche dans la session
-  PRIMARY KEY (`IdSession`, `IdT`),
-  FOREIGN KEY (`IdSession`) REFERENCES `planning_poker_sessions`(`IdSession`) ON DELETE CASCADE,
-  FOREIGN KEY (`IdT`) REFERENCES `taches`(`IdT`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
-CREATE TABLE `votes` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `task_id` int(11) NOT NULL,
-  `user_id` smallint(6) NOT NULL,
-  `cost` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`task_id`) REFERENCES `taches`(`IdT`),
-  FOREIGN KEY (`user_id`) REFERENCES `utilisateurs`(`IdU`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Index pour les tables déchargées
@@ -388,8 +363,6 @@ CREATE TABLE `votes` (
 --
 -- Index pour la table `equipesprj`
 --
-ALTER TABLE `equipesprj`
-  ADD PRIMARY KEY (`IdEq`);
 
 --
 -- Index pour la table `etatstaches`
@@ -401,7 +374,7 @@ ALTER TABLE `etatstaches`
 -- Index pour la table `idees_bac_a_sable`
 --
 ALTER TABLE `idees_bac_a_sable`
-  ADD PRIMARY KEY (`Id_Idee_bas`),
+  
   ADD KEY `IdU` (`IdU`),
   ADD KEY `IdEq` (`IdEq`);
 
@@ -421,7 +394,6 @@ ALTER TABLE `roles`
 -- Index pour la table `rolesutilisateurprojet`
 --
 ALTER TABLE `rolesutilisateurprojet`
-  ADD PRIMARY KEY (`IdR`,`IdEq`),
   ADD KEY `IdR` (`IdR`),
   ADD KEY `IdEq` (`IdEq`),
   ADD KEY `FK_RoleUtil_Utilisateurs` (`IdU`);
@@ -430,7 +402,6 @@ ALTER TABLE `rolesutilisateurprojet`
 -- Index pour la table `sprintbacklog`
 --
 ALTER TABLE `sprintbacklog`
-  ADD PRIMARY KEY (`IdT`),
   ADD KEY `IdS` (`IdS`),
   ADD KEY `IdU` (`IdU`),
   ADD KEY `IdEtat` (`IdEtat`);
@@ -439,22 +410,26 @@ ALTER TABLE `sprintbacklog`
 -- Index pour la table `sprints`
 --
 ALTER TABLE `sprints`
-  ADD PRIMARY KEY (`IdS`),
   ADD KEY `IdEq` (`IdEq`);
 
 --
 -- Index pour la table `taches`
 --
 ALTER TABLE `taches`
-  ADD PRIMARY KEY (`IdT`),
   ADD KEY `IdPriorite` (`IdPriorite`),
   ADD KEY `IndexIdEq` (`IdEq`);
 
 --
 -- Index pour la table `utilisateurs`
 --
-ALTER TABLE `utilisateurs`
-  ADD PRIMARY KEY (`IdU`);
+
+--
+-- Index pour la table `VoterPP`
+--
+ALTER TABLE `VoterPP`
+  ADD KEY `IdU` (`IdU`),
+  ADD KEY `IdT` (`IdT`);
+
 
 --
 -- AUTO_INCREMENT pour les tables déchargées
@@ -463,8 +438,6 @@ ALTER TABLE `utilisateurs`
 --
 -- AUTO_INCREMENT pour la table `utilisateurs`
 --
-ALTER TABLE `utilisateurs`
-  MODIFY `IdU` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Contraintes pour les tables déchargées
@@ -506,8 +479,17 @@ ALTER TABLE `sprints`
 ALTER TABLE `taches`
   ADD CONSTRAINT `FK_TachesEquipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`),
   ADD CONSTRAINT `FK_Taches_Priorite` FOREIGN KEY (`IdPriorite`) REFERENCES `prioritestaches` (`idPriorite`);
-
 COMMIT;
+
+
+--
+-- Contraintes pour la table `VoterPP`
+--
+ALTER TABLE `VoterPP`
+  ADD CONSTRAINT `FK_VoterPP_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`),
+  ADD CONSTRAINT `FK_VoterPP_Taches` FOREIGN KEY (`IdT`) REFERENCES `taches` (`idT`);
+COMMIT;
+
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
@@ -581,6 +563,40 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+
+-- procedure qui change l'etat de connection de l'utilisateur en parametre
+
+DROP PROCEDURE IF EXISTS  Change_State_User  ;
+
+DELIMITER //
+CREATE PROCEDURE Change_State_User
+(IN Id_User INT) 
+BEGIN
+    DECLARE connect INT;
+    DECLARE new_state INT;
+    SET connect = (SELECT is_connected
+		   FROM utilisateurs
+		   WHERE IdU=Id_User);
+IF (connect=0) THEN
+    SET new_state=1;
+ELSE 
+    SET new_state=0;
+END IF ;
+
+UPDATE utilisateurs
+    SET is_connected=new_state
+    WHERE IdU = Id_User;
+
+
+END //
+DELIMITER ;
+
+
+
+
+
 
 
 -- procedure pour avoir la somme des cout des taches d'un sprint
