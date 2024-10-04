@@ -1,12 +1,3 @@
-<?php
-    include "accueil.php";
-    echo "<p>Page project owner</p><br>";
-?>
-   <!-- Définition du projet : desc app finale, attente du client -->
-   <!-- Besoin d'ajouter la colonne :
-        ALTER TABLE equipesprj
-        ADD descProj VARCHAR(55); -->
-
     <form method="POST">
         <br>Définition du projet<br>
         <textarea name="defProj" rows="5" cols="50"></textarea><br>
