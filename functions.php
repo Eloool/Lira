@@ -116,5 +116,53 @@ function get_tasks_by_project($conn, $project_id) {
     }
 }
 
+function get_roles_for_user_for_project($conn,$user_id,$project_id){
+    $sql = "SELECT IdR
+            FROM rolesutilisateurprojet
+            WHERE IdU = ? AND IdEq = ?";
 
+    // Préparation de la requête
+    if ($stmt = $conn->prepare($sql)) {
+        // Liaison du paramètre (le ? correspond à $user_id)
+        $stmt->bind_param('ii', $user_id, $project_id);
+
+        // Exécution de la requête
+        $stmt->execute();
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+
+        // Récupération des enregistrements sous forme de tableau associatif
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        // Gestion de l'erreur si la requête échoue
+        die("Erreur dans la requête : " . $conn->error);
+    }
+}
+
+function get_taches_for_user_by_project($conn,$user_id,$project_id){
+    $sql = "SELECT TitreT
+            FROM taches
+            JOIN equipesprj ON taches.IdEq = equipesprj.IdEq
+            JOIN rolesutilisateurprojet ON rolesutilisateurprojet.IdEq = equipesprj.IdEq
+            WHERE rolesutilisateurprojet.IdU = ? AND equipesprj.IdEq = ?";
+
+    // Préparation de la requête
+    if ($stmt = $conn->prepare($sql)) {
+        // Liaison du paramètre (le ? correspond à $user_id)
+        $stmt->bind_param('ii', $user_id, $project_id);
+
+        // Exécution de la requête
+        $stmt->execute();
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+
+        // Récupération des enregistrements sous forme de tableau associatif
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        // Gestion de l'erreur si la requête échoue
+        die("Erreur dans la requête : " . $conn->error);
+    }
+}
 ?>

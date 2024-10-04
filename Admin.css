@@ -1,0 +1,116 @@
+/* Global reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.main {
+    font-family: Arial, sans-serif;
+    background-color: #0055A4; /* Bleu français */
+    color: white;
+    
+}
+.admin{
+    display: flex;
+    justify-content: flex-start; /* Aligne le contenu en haut de la page */
+    align-items: center;
+    min-height: 100vh; /* Laisse le contenu s'étendre si nécessaire */
+    flex-direction: column;
+    padding-top: 50px; /* Ajoute de l'espace en haut pour éviter que le contenu ne soit coupé */
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2em;
+}
+
+form {
+    background-color: #FFF;
+    color: #0055A4; /* Bleu français pour le texte */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: 350px;
+    margin-bottom: 30px; /* Pour espacer les formulaires */
+    text-align: center;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+}
+
+input[type="text"],
+input[type="password"],
+select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #0055A4;
+    border-radius: 5px;
+    color: #0055A4; /* Texte bleu français */
+}
+
+input[type="submit"] {
+    background-color: #0055A4;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: #FFCC00; /* Jaune doré au survol */
+}
+
+/* Responsiveness */
+@media (max-width: 400px) {
+    form {
+        width: 90%;
+    }
+}
+
+/* Message styling */
+p {
+    color: white;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+header {
+    color: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+.logo {
+    width: 50px; /* Adjust size as needed */
+    height: 50px;
+}
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+.button {
+    margin-left: 10px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.button:hover {
+    background-color: #0056b3;
+}   
