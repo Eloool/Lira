@@ -76,6 +76,31 @@ INSERT INTO `etatstaches` (`IdEtat`, `DescEtat`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `coutstaches`
+--
+
+CREATE TABLE `coutstaches` (
+  `IdCout` smallint(4) NOT NULL,
+  `ValCout` varchar(6) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `etatstaches`
+--
+
+INSERT INTO `coutstaches` (`IdCout`, `ValCout`) VALUES
+(1, '?'),
+(2, '1'),
+(3, '3'),
+(4, '5'),
+(5, '10'),
+(6, '15'),
+(7, '25'),
+(8, '999');
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `idees_bac_a_sable`
 --
 
@@ -277,27 +302,28 @@ CREATE TABLE `taches` (
   `TitreT` varchar(50) NOT NULL,
   `UserStoryT` varchar(300) NOT NULL,
   `IdEq` smallint(6) NOT NULL,
-  `CoutT` enum('?','1','3','5','10','15','25','999') NOT NULL DEFAULT '?',
-  `IdPriorite` tinyint(1) NOT NULL
+  `IdCout` smallint(6) NOT NULL DEFAULT 1,
+  `IdPriorite` tinyint(1) NOT NULL,
+  `VotePP` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `taches`
 --
 
-INSERT INTO `taches` (`IdT`, `TitreT`, `UserStoryT`, `IdEq`, `CoutT`, `IdPriorite`) VALUES
-(1, 'Créer la base de données', 'En tant que développeur, je veux une base de données stable', 1, '5', 1),
-(2, 'Concevoir l\'interface utilisateur', 'En tant qu\'utilisateur, je veux une interface intuitive', 2, '10', 2),
-(3, 'Tester l\'application', 'En tant que QA, je veux garantir la qualité du produit', 3, '3', 3),
-(4, 'Documenter le code', 'En tant que développeur, je veux une documentation claire', 4, '1', 4),
-(5, 'Optimiser la requête SQL', 'En tant que DBA, je veux améliorer les performances des requêtes', 5, '5', 1),
-(6, 'Implémenter l\'authentification', 'En tant qu\'utilisateur, je veux me connecter en toute sécurité', 6, '10', 2),
-(7, 'Créer les tests unitaires', 'En tant que QA, je veux automatiser les tests', 7, '3', 3),
-(8, 'Déployer l\'application', 'En tant que développeur, je veux que l\'application soit en production', 8, '999', 4),
-(9, 'Mettre en place le système de notifications', 'En tant qu\'utilisateur, je veux recevoir des alertes en temps réel', 9, '15', 1),
-(10, 'Refactoriser le code legacy', 'En tant que développeur, je veux simplifier l\'ancien code', 10, '25', 2),
-(11, 'Configurer le serveur de production', 'En tant que SysAdmin, je veux préparer l\'environnement de production', 11, '5', 3),
-(12, 'Rédiger la documentation utilisateur', 'En tant que rédacteur, je veux que l\'utilisateur ait des guides clairs', 12, '3', 4);
+INSERT INTO `taches` (`IdT`, `TitreT`, `UserStoryT`, `IdEq`, `IdCout`, `IdPriorite`) VALUES
+(1, 'Créer la base de données', 'En tant que développeur, je veux une base de données stable', 1, 4, 1),
+(2, 'Concevoir l\'interface utilisateur', 'En tant qu\'utilisateur, je veux une interface intuitive', 2, 5, 2),
+(3, 'Tester l\'application', 'En tant que QA, je veux garantir la qualité du produit', 3, 3, 3),
+(4, 'Documenter le code', 'En tant que développeur, je veux une documentation claire', 4, 2, 4),
+(5, 'Optimiser la requête SQL', 'En tant que DBA, je veux améliorer les performances des requêtes', 5,4, 1),
+(6, 'Implémenter l\'authentification', 'En tant qu\'utilisateur, je veux me connecter en toute sécurité', 6, 6, 2),
+(7, 'Créer les tests unitaires', 'En tant que QA, je veux automatiser les tests', 7, 3, 3),
+(8, 'Déployer l\'application', 'En tant que développeur, je veux que l\'application soit en production', 8, 8, 4),
+(9, 'Mettre en place le système de notifications', 'En tant qu\'utilisateur, je veux recevoir des alertes en temps réel', 8, 6, 1),
+(10, 'Refactoriser le code legacy', 'En tant que développeur, je veux simplifier l\'ancien code', 10, 7, 2),
+(11, 'Configurer le serveur de production', 'En tant que SysAdmin, je veux préparer l\'environnement de production', 11, 4, 3),
+(12, 'Rédiger la documentation utilisateur', 'En tant que rédacteur, je veux que l\'utilisateur ait des guides clairs', 12, 3, 4);
 
 -- --------------------------------------------------------
 
