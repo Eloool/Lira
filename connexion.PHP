@@ -32,6 +32,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Vérifier si le mot de passe est correct
         if (password_verify($password, $row['MotDePasseU'])) {
+            // Requête SQL avec un paramètre
+            $sql = "CALL Change_State_User(?);";
+
+            // Préparation de la requête
+            $stmt = $conn->prepare($sql);
+
+            // Liaison du paramètre (le ? correspond à $user_id)
+            $stmt->bind_param('i', $row['IdU']);
+
+            // Exécution de la requête
+            $stmt->execute();
+
+            //Vérifier si l'utilisateur n'est pas déjà connecté
+            if($row['is_connected'] == 0){
             // Stocker l'ID de l'utilisateur dans la session
             $_SESSION['user_id'] = $row['IdU'];
 
@@ -44,6 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo '<div style="background-color: #0055A4;color: white;padding: 15px;border-radius: 5px;text-align: center;font-weight: bold;box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
                 position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">Connexion réussie. Bienvenue, $nom $prenom!</div>';
                 header("refresh:3;url=acceuil.php");  // Redirection vers la page d'accueil après 3 secondes
+            }
             }
             exit();  // Terminer le script pour éviter que le reste de la page ne s'exécute
         } else {
