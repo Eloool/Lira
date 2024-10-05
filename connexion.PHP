@@ -59,6 +59,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">Connexion réussie. Bienvenue, $nom $prenom!</div>';
                 header("refresh:3;url=acceuil.php");  // Redirection vers la page d'accueil après 3 secondes
             }
+                else {
+                echo "Utilisateur déjà connecté";
+            }
             }
             exit();  // Terminer le script pour éviter que le reste de la page ne s'exécute
         } else {
