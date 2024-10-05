@@ -12,7 +12,7 @@
     </form>
 
     <?php
-        $idSpr = 1; //il faut récup l'id du sprint actuel
+        $idSpr = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         $retSpr = $_POST['retSpr'] ?? null;
 
         if ($retSpr !== null) {
@@ -41,7 +41,7 @@
     <?php
         $dDebut = $_POST['dDebut'] ?? null;
         $dFin = $_POST['dFin'] ?? null;
-        $idEq = 1; //il faut récup l'id du projet/equipe
+        $idEq = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
         if ($dDebut !== null && $dFin !== null) {
             $dDebut = $conn->real_escape_string($dDebut);
