@@ -15,7 +15,7 @@ if ($user_id) {
     $user_tasks = get_user_tasks($conn, $user_id); // Tâches de l'utilisateur connecté
 } else {
     // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
-    header("Location: connexion.PHP");
+    header("Location: login.php");
     exit();
 }
 ?>
@@ -44,13 +44,11 @@ if ($user_id) {
         </tr>
     <?php endforeach; ?>
 </tbody>
-
 </table>
 
-    <?php
-    if ($user_id) : ?>
-        <h2>Votre tableau de bord personnel</h2>
-        <table>
+<?php if ($user_id) : ?>
+    <h2>Votre tableau de bord personnel</h2>
+    <table>
         <thead>
             <tr>
                 <th>Nom du projet</th>
@@ -60,7 +58,12 @@ if ($user_id) {
         <tbody>
             <?php foreach ($user_projects as $project) : ?>
                 <tr>
-                    <td><?= htmlspecialchars($project['NomEq']) ?></td>
+                    <td>
+                        <!-- Lien vers la page du projet avec l'ID dans l'URL -->
+                        <a href="projet.php?id=<?= $project['IdEq'] ?>">
+                            <?= htmlspecialchars($project['NomEq']) ?>
+                        </a>
+                    </td>
                     <td>
                         <ul>
                             <?php foreach ($user_tasks as $task) : ?>
@@ -73,7 +76,8 @@ if ($user_id) {
                 </tr>
             <?php endforeach; ?>
         </tbody>
-        </table>
-        <?php endif; ?>
+    </table>
+<?php endif; ?>
+
 </body>
 </html>

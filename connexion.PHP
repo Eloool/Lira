@@ -1,55 +1,40 @@
 <?php
-// Démarre la session pour gérer les cookies
-session_start();
+session_start(); // Démarre la session pour gérer les cookies
 
-// Inclure le fichier de connexion à la base de données
-include 'include/db_connect.php';
+include 'functions.php';
 
-// Vérifier si un cookie existe déjà
-if (isset($_COOKIE['username'])) {
-    $username = $_COOKIE['username'];
-} else {
-    $username = '';
-}
+$conn = db_connect();
 
-// Gestion de la connexion
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nom = $_POST['nom'];
     $prenom = $_POST['prenom'];
     $password = $_POST['password'];
 
-    // Vérifier si la connexion à la base de données est bien établie
+    // Vérifier la connexion à la base de données
     if ($conn->connect_error) {
         die("Erreur de connexion à la base de données: " . $conn->connect_error);
     }
 
-    // Préparer la requête SQL pour récupérer l'utilisateur
+    // Préparer la requête SQL
     $sql = "SELECT * FROM utilisateurs WHERE NomU = ? AND PrenomU = ?";
     $stmt = $conn->prepare($sql);
-
     if ($stmt === false) {
         die("Erreur dans la requête SQL: " . $conn->error);
     }
 
     $stmt->bind_param("ss", $nom, $prenom);
     $stmt->execute();
-
-    // Récupérer le résultat
     $result = $stmt->get_result();
-
-    if ($result === false) {
-        die("Erreur lors de la récupération des résultats: " . $stmt->error);
-    }
 
     // Vérifier si l'utilisateur existe
     if ($result->num_rows > 0) {
-        // L'utilisateur existe, on récupère ses informations
         $row = $result->fetch_assoc();
 
         // Vérifier si le mot de passe est correct
         if (password_verify($password, $row['MotDePasseU'])) {
             // Requête SQL avec un paramètre
             $sql = "CALL Change_State_User(?);";
+
 
             // Préparation de la requête
             $stmt = $conn->prepare($sql);
@@ -80,6 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     header("refresh:3;url=accueil.php");  // Redirection vers la page d'accueil après 3 secondes
                 }
                 exit();  // Terminer le script pour éviter que le reste de la page ne s'exécute
+
             }
             else {
                 echo "Utilisateur déjà connecté";
@@ -107,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <h2>Page de connexion</h2>
 <form method="POST" action="connexion.php">
     <label for="nom">Nom :</label>
-    <input type="text" id="nom" name="nom" value="<?php echo htmlspecialchars($username); ?>" required><br>
+    <input type="text" id="nom" name="nom" value="" required><br>
 
     <label for="prenom">Prénom :</label>
     <input type="text" id="prenom" name="prenom" required><br>
@@ -120,3 +106,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 </body>
 </html>
+
+

@@ -95,7 +95,7 @@ function get_tasks_by_project($conn, $project_id) {
     $sql = "SELECT * 
             FROM taches
             JOIN sprintbacklog ON sprintbacklog.IdT = taches.IdT
-            WHERE sprintbacklog.IdEq = ?";
+            WHERE taches.IdEq = ?";
 
     // Préparation de la requête
     if ($stmt = $conn->prepare($sql)) {
@@ -116,5 +116,96 @@ function get_tasks_by_project($conn, $project_id) {
     }
 }
 
+function get_roles_for_user_for_project($conn,$user_id,$project_id){
+    $sql = "SELECT IdR
+            FROM rolesutilisateurprojet
+            WHERE IdU = ? AND IdEq = ?";
 
+    // Préparation de la requête
+    if ($stmt = $conn->prepare($sql)) {
+        // Liaison du paramètre (le ? correspond à $user_id)
+        $stmt->bind_param('ii', $user_id, $project_id);
+
+        // Exécution de la requête
+        $stmt->execute();
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+
+        // Récupération des enregistrements sous forme de tableau associatif
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        // Gestion de l'erreur si la requête échoue
+        die("Erreur dans la requête : " . $conn->error);
+    }
+}
+
+function get_tasks_for_user_by_project($conn,$user_id,$project_id){
+    $sql = "SELECT TitreT
+            FROM taches
+            JOIN equipesprj ON taches.IdEq = equipesprj.IdEq
+            JOIN rolesutilisateurprojet ON rolesutilisateurprojet.IdEq = equipesprj.IdEq
+            WHERE rolesutilisateurprojet.IdU = ? AND equipesprj.IdEq = ?";
+
+    // Préparation de la requête
+    if ($stmt = $conn->prepare($sql)) {
+        // Liaison du paramètre (le ? correspond à $user_id)
+        $stmt->bind_param('ii', $user_id, $project_id);
+
+        // Exécution de la requête
+        $stmt->execute();
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+
+        // Récupération des enregistrements sous forme de tableau associatif
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        // Gestion de l'erreur si la requête échoue
+        die("Erreur dans la requête : " . $conn->error);
+    }
+}
+function get_etats($conn){
+    $sql = "SELECT DescEtat,IdEtat
+            FROM etatstaches";
+
+    // Préparation de la requête
+    if ($stmt = $conn->prepare($sql)) {
+        // Exécution de la requête
+        $stmt->execute();
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+
+        // Récupération des enregistrements sous forme de tableau associatif
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        // Gestion de l'erreur si la requête échoue
+        die("Erreur dans la requête : " . $conn->error);
+    }
+}
+
+function get_etat_of_task($conn,$tache_id){
+    $sql = "SELECT IdEtat
+            FROM sprintbacklog
+            WHERE IdT = ?";
+
+    // Préparation de la requête
+    if ($stmt = $conn->prepare($sql)) {
+        // Liaison du paramètre (le ? correspond à $user_id)
+        $stmt->bind_param('i', $tache_id);
+
+        // Exécution de la requête
+        $stmt->execute();
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+
+        // Récupération des enregistrements sous forme de tableau associatif
+        return $result->fetch_all(MYSQLI_ASSOC)[0]['IdEtat'];
+    } else {
+        // Gestion de l'erreur si la requête échoue
+        die("Erreur dans la requête : " . $conn->error);
+    }
+}
 ?>
