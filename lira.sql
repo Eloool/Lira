@@ -334,6 +334,24 @@ INSERT INTO `utilisateurs` (`IdU`, `NomU`, `PrenomU`, `MotDePasseU`, `Specialite
 (13, 'JDO', 'JDO', '$2y$10$PzO/zdodF3DP/7KLR1vHUu37OcJjRgQRefXy.f9dKom3beTHDsV.6', 'Animateur', 1),
 (14, 'oui', 'oui', '$2y$10$VrnlmMX76zTjD0y.GUPA/O/idnOUlNqNbnlNkqlx/3vBi0Ksda0Zq', 'Développeur', 0);
 
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `VoterPP`
+--
+
+CREATE TABLE `VoterPP` (
+  `IdU` smallint(6) NOT NULL,
+  `IdT` int(11) NOT NULL,
+  `IdCout` smallint(6) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`IdU`, `IdT`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- --------------------------------------------------------
+
+
 --
 -- Index pour les tables déchargées
 --
@@ -397,6 +415,14 @@ ALTER TABLE `sprints`
 ALTER TABLE `taches`
   ADD KEY `IdPriorite` (`IdPriorite`),
   ADD KEY `IndexIdEq` (`IdEq`);
+
+--
+-- Index pour la table `VoterPP`
+--
+ALTER TABLE `VoterPP`
+  ADD KEY `IdU` (`IdU`),
+  ADD KEY `IdT` (`IdT`),
+  ADD KEY `IndexCout` (`IdCout`);
 
 --
 -- Index pour la table `utilisateurs`
