@@ -36,7 +36,7 @@ function get_roles_for_user_for_project($conn,$user_id,$project_id){
 }
 
 function get_taches_for_user_by_project($conn,$user_id,$project_id){
-    $sql = "SELECT TitreT
+    $sql = "SELECT TitreT,IdT
             FROM taches
             JOIN equipesprj ON taches.IdEq = equipesprj.IdEq
             JOIN rolesutilisateurprojet ON rolesutilisateurprojet.IdEq = equipesprj.IdEq
@@ -60,10 +60,66 @@ function get_taches_for_user_by_project($conn,$user_id,$project_id){
         die("Erreur dans la requête : " . $conn->error);
     }
 }
+
+function get_etats($conn){
+    $sql = "SELECT DescEtat,IdEtat
+            FROM etatstaches";
+
+    // Préparation de la requête
+    if ($stmt = $conn->prepare($sql)) {
+        // Exécution de la requête
+        $stmt->execute();
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+
+        // Récupération des enregistrements sous forme de tableau associatif
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        // Gestion de l'erreur si la requête échoue
+        die("Erreur dans la requête : " . $conn->error);
+    }
+}
+
+function get_etat_of_tache($conn,$tache_id){
+    $sql = "SELECT IdEtat
+            FROM sprintbacklog
+            WHERE IdT = ?";
+
+    // Préparation de la requête
+    if ($stmt = $conn->prepare($sql)) {
+        // Liaison du paramètre (le ? correspond à $user_id)
+        $stmt->bind_param('i', $tache_id);
+
+        // Exécution de la requête
+        $stmt->execute();
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+
+        // Récupération des enregistrements sous forme de tableau associatif
+        return $result->fetch_all(MYSQLI_ASSOC)[0]['IdEtat'];
+    } else {
+        // Gestion de l'erreur si la requête échoue
+        die("Erreur dans la requête : " . $conn->error);
+    }
+}
 $ID_user = 3;
 $project_id = 3;
+$etats = get_etats($conn);
 $taches = get_taches_for_user_by_project($conn,$ID_user,$project_id);
 $Roleuser = get_roles_for_user_for_project($conn,$ID_user,$project_id)[0]['IdR'];
+if (isset($_POST['Changer'])) {
+    // Récupérer les données du formulaire
+    $tacheID =$_POST['tache'];
+    $etatID =$_POST['etat'];
+
+    // Assigner le rôle à l'utilisateur pour le projet sélectionné
+    $UpdateRoleQuery = "UPDATE sprintbacklog SET IdEtat =  ? WHERE IdT = ? ";
+    $stmt = $conn->prepare($UpdateRoleQuery);
+    $stmt->bind_param('ii', $etatID, $tacheID);
+    $stmt->execute();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -103,8 +159,28 @@ $Roleuser = get_roles_for_user_for_project($conn,$ID_user,$project_id)[0]['IdR']
 <?php foreach ($taches as $tache) : ?>
     <tr>
         <td><?= htmlspecialchars($tache['TitreT']) ?></td>
+
+        <form method="post" action="" id="Formulaire_<?= $tache['IdT'] ?>">
+            <input type="hidden" name="tache" value="<?= $tache['IdT'] ?>">
+
+            <select name="etat" id="etat-tache">
+                <?php
+                $ide = get_etat_of_tache($conn, $tache['IdT']) - 1;
+                echo "<option value='" . $ide . "'>" . $etats[$ide]['DescEtat'] . "</option>";
+                foreach ($etats as $etat) :
+                    if ($etat['IdEtat'] != $ide + 1) {
+                        echo "<option value='" . $etat['IdEtat'] . "'>" . $etat['DescEtat'] . "</option>";
+                    }
+                endforeach;
+                ?>
+            </select>
+
+            <input type="submit" value="Changer" name="Changer"/>
+        </form>
     </tr>
+    <br><br>
 <?php endforeach; ?>
+
 <a href="ppvote.php">
 <?php
 if($Roleuser==='SM'){
