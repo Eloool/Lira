@@ -26,6 +26,7 @@ if ($user_id) {
     <title>Tableau de bord</title>
 </head>
 <body>
+    <?php include "header.php";?>
     <h1>Tableau de bord</h1>
 
     <h2>Tous les projets</h2>

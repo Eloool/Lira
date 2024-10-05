@@ -1,5 +1,5 @@
 <?php
-include "db_connect.php";
+include "include/db_connect.php";
 
 // Suppression d'une idée
 if (isset($_GET['delete'])) {
@@ -37,12 +37,7 @@ $sql = "SELECT Id_Idee_bas, desc_Idee_bas FROM idees_bac_a_sable ORDER BY Id_Ide
 $result = $conn->query($sql);
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Gestion des idées</title>
-</head>
-<body>
+
     <h1>Ajouter une idée au bac à sable</h1>
     <form method="post" action="">
         <label for="desc_Idee_bas">Description de l'idée :</label><br>
@@ -70,10 +65,5 @@ $result = $conn->query($sql);
         }
         ?>
     </table>
-</body>
-</html>
 
-<?php
-// Fermeture de la connexion
-$conn->close();
-?>
+

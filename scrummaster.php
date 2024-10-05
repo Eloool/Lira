@@ -1,7 +1,6 @@
-<?php
-    include "accueil.php";
-    echo "<p>Page scrum master</p><br>";
-?>
+
+<p>Page scrum master</p><br>
+
 
 
 <!-- Saisie retrospective de sprint -->
@@ -54,4 +53,5 @@
                 echo "Erreur lors de l'ajout : " . $conn->error;
             }
         }
+        include "Include/Ajout_MF.php";
     ?>

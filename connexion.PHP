@@ -35,7 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Requête SQL avec un paramètre
             $sql = "CALL Change_State_User(?);";
 
-
             // Préparation de la requête
             $stmt = $conn->prepare($sql);
 
@@ -47,10 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             //Vérifier si l'utilisateur n'est pas déjà connecté
             if($row['is_connected'] == 0){
-                // Définir un cookie valable 7 jours
-                setcookie("username", $nom, time() + (7 * 24 * 60 * 60), "/");
-
-
                 // Stocker l'ID utilisateur et le rôle dans la session
                 $_SESSION['user_id'] = $row['IdU']; // ID utilisateur
 

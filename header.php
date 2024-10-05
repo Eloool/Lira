@@ -3,8 +3,7 @@ function Suppr_cookie(){
     // Suppression du cookie de username
     if(isset($_COOKIE['username'])){
         
-        unset($_COOKIE['username']);
-        setcookie('username', '', time() - 4200, '/');
+        $_SESSION = [];
         header("Location: connexion.php");
     } 
 }
@@ -19,7 +18,9 @@ if (isset($_GET['push_deconnextion'])) {
         </div>
         <h1 class="title">LIRA</h1>
         <div>
+        <a href="accueil.php">
             <button class="button">Accueil</button>
+        </a>
             <a href='header.php?push_deconnextion=true'>
             <button class="button">Déconnexion</button>
         </a>

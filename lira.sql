@@ -340,28 +340,29 @@ CREATE TABLE `utilisateurs` (
   `PrenomU` varchar(50) NOT NULL,
   `MotDePasseU` varchar(255) NOT NULL,
   `SpecialiteU` enum('Développeur','Modeleur','Animateur','UI','IA','WebComm','Polyvalent') NOT NULL DEFAULT 'Polyvalent',
-  `is_admin` tinyint(1) DEFAULT 0
+  `is_admin` tinyint(1) DEFAULT 0,
+  `is_connected` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `utilisateurs`
 --
 
-INSERT INTO `utilisateurs` (`IdU`, `NomU`, `PrenomU`, `MotDePasseU`, `SpecialiteU`, `is_admin`) VALUES
-(1, 'Dupont', 'Jean', '$2y$10$odAVbifDyOofCjnD4AahMOmKvggSaRRmPP0VLPsJpROKi.pWzhxje', 'Développeur', 0),
-(2, 'Martin', 'Marie', '$2y$10$.YUW4DfqJPB/RJC0C5nkOOYJmBHX2OtX7d6lYaH1jvs6OcTik9uSG', 'UI', 0),
-(3, 'Durand', 'Pierre', '$2y$10$3R4PDx2ukqdw0QZbvdnAhOa7xKyoToRD355ob0zrQLRhDnrlHooOy', 'Polyvalent', 0),
-(4, 'Lemoine', 'Sophie', '$2y$10$Upq.LJVS0dOrKhF28fe3qutOUQTatYJgmmVxdIzd1/C5G6WHnkfyW', 'IA', 0),
-(5, 'Petit', 'Clara', '$2y$10$JDI1pA50q5KFvQheE4UNOuR6HN/DP7vOItftvi3ix1AwssCvsvloi', 'WebComm', 0),
-(6, 'Roche', 'Nicolas', '$2y$10$Eb3GC9XBcWxPxgscIaeuxO2iXc0av495R85METqlhjay7U8hPdM.2', 'Développeur', 0),
-(7, 'Moreau', 'Isabelle', '$2y$10$gmDEOGjRGHMu8102x.3nQOkc7PnZAf2rMOoW/diL5wd9K4.oAVQ8W', 'Modeleur', 0),
-(8, 'Fabre', 'Thomas', '$2y$10$k487SKVTg6DP2bxzoeiKuuuIM2Sq1Si8RM2tOdahiX8DemxwuToyO', 'UI', 0),
-(9, 'Bernard', 'Laura', '$2y$10$YNm1yzUSdWj5wJpibH7cw.vE1CpYEywe.OG1lnjPIafcAuhiCHGIe', 'Polyvalent', 0),
-(10, 'Girard', 'Luc', '$2y$10$3MpoCCv03o1iHhsKjmTwv.6rDV.ET2dqc9YJIugEmXhOvRQ91WXV2', 'Animateur', 0),
-(11, 'Mercier', 'Alexandre', '$2y$10$sTlIAf1o7/n/IWMtUgmKvuDq0ezHCmio1c1UOltaNrukc9fe7rnnG', 'Animateur', 0),
-(12, 'Blanc', 'Julie', '$2y$10$VJ7VtJbacS5ayc6BQFf9j.UEJWL2bkZO6IGmeH6B.Shfzy5J37Ll.', 'Polyvalent', 0),
-(13, 'JDO', 'JDO', '$2y$10$PzO/zdodF3DP/7KLR1vHUu37OcJjRgQRefXy.f9dKom3beTHDsV.6', 'Animateur', 1),
-(14, 'oui', 'oui', '$2y$10$VrnlmMX76zTjD0y.GUPA/O/idnOUlNqNbnlNkqlx/3vBi0Ksda0Zq', 'Développeur', 0);
+INSERT INTO `utilisateurs` (`IdU`, `NomU`, `PrenomU`, `MotDePasseU`, `SpecialiteU`, `is_admin`,`is_connected`) VALUES
+(1, 'Dupont', 'Jean', '$2y$10$odAVbifDyOofCjnD4AahMOmKvggSaRRmPP0VLPsJpROKi.pWzhxje', 'Développeur', 0,0),
+(2, 'Martin', 'Marie', '$2y$10$.YUW4DfqJPB/RJC0C5nkOOYJmBHX2OtX7d6lYaH1jvs6OcTik9uSG', 'UI', 0,0),
+(3, 'Durand', 'Pierre', '$2y$10$3R4PDx2ukqdw0QZbvdnAhOa7xKyoToRD355ob0zrQLRhDnrlHooOy', 'Polyvalent', 0,0),
+(4, 'Lemoine', 'Sophie', '$2y$10$Upq.LJVS0dOrKhF28fe3qutOUQTatYJgmmVxdIzd1/C5G6WHnkfyW', 'IA', 0,0),
+(5, 'Petit', 'Clara', '$2y$10$JDI1pA50q5KFvQheE4UNOuR6HN/DP7vOItftvi3ix1AwssCvsvloi', 'WebComm', 0,0),
+(6, 'Roche', 'Nicolas', '$2y$10$Eb3GC9XBcWxPxgscIaeuxO2iXc0av495R85METqlhjay7U8hPdM.2', 'Développeur', 0,0),
+(7, 'Moreau', 'Isabelle', '$2y$10$gmDEOGjRGHMu8102x.3nQOkc7PnZAf2rMOoW/diL5wd9K4.oAVQ8W', 'Modeleur', 0,0),
+(8, 'Fabre', 'Thomas', '$2y$10$k487SKVTg6DP2bxzoeiKuuuIM2Sq1Si8RM2tOdahiX8DemxwuToyO', 'UI', 0,0),
+(9, 'Bernard', 'Laura', '$2y$10$YNm1yzUSdWj5wJpibH7cw.vE1CpYEywe.OG1lnjPIafcAuhiCHGIe', 'Polyvalent', 0,0),
+(10, 'Girard', 'Luc', '$2y$10$3MpoCCv03o1iHhsKjmTwv.6rDV.ET2dqc9YJIugEmXhOvRQ91WXV2', 'Animateur', 0,0),
+(11, 'Mercier', 'Alexandre', '$2y$10$sTlIAf1o7/n/IWMtUgmKvuDq0ezHCmio1c1UOltaNrukc9fe7rnnG', 'Animateur', 0,0),
+(12, 'Blanc', 'Julie', '$2y$10$VJ7VtJbacS5ayc6BQFf9j.UEJWL2bkZO6IGmeH6B.Shfzy5J37Ll.', 'Polyvalent', 0,0),
+(13, 'JDO', 'JDO', '$2y$10$PzO/zdodF3DP/7KLR1vHUu37OcJjRgQRefXy.f9dKom3beTHDsV.6', 'Animateur', 1,0),
+(14, 'oui', 'oui', '$2y$10$VrnlmMX76zTjD0y.GUPA/O/idnOUlNqNbnlNkqlx/3vBi0Ksda0Zq', 'Développeur', 0,0);
 
 -- --------------------------------------------------------
 
@@ -458,19 +459,6 @@ ALTER TABLE `VoterPP`
   ADD KEY `IdT` (`IdT`),
   ADD KEY `IndexCout` (`IdCout`);
 
---
--- Index pour la table `VoterPP`
---
-ALTER TABLE `VoterPP`
-  ADD KEY `IdU` (`IdU`),
-  ADD KEY `IdT` (`IdT`),
-  ADD KEY `IndexCout` (`IdCout`);
-
---
--- Index pour la table `utilisateurs`
---
-ALTER TABLE `utilisateurs`
-  ADD PRIMARY KEY (`IdU`);
 
 --
 -- AUTO_INCREMENT pour les tables déchargées
@@ -582,28 +570,7 @@ BEGIN
 END$$
 
 DELIMITER ;
-DROP TRIGGER IF EXISTS check_admin_update;
-DELIMITER $$
 
-CREATE TRIGGER check_admin_update
-BEFORE UPDATE ON utilisateurs
-FOR EACH ROW
-BEGIN
-    DECLARE nb_admin INT;
-
-    SET nb_admin = (
-        SELECT COUNT(*)
-        FROM utilisateurs
-        WHERE utilisateurs.is_admin = TRUE
-    );
-
-    IF new.is_admin=True AND nb_admin > 0 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Il ne peut y avoir qu\'un seul administrateur.';
-    END IF;
-END$$
-
-DELIMITER ;
 
 
 

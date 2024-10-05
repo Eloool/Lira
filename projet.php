@@ -110,7 +110,7 @@ if (isset($_POST['Changer'])) {
     <br><br>
 <?php endforeach; ?>
 
-<a href="ppvote.php">
+<a href="ppvote.php?id=<?= $project_id ?>">
 <?php
 if($Roleuser==='SM'){
     echo "Lancer Planning Poker";
@@ -124,7 +124,7 @@ if($Roleuser==='PO'){
     include 'projectowner.php';
 }
 if($Roleuser==='SM'){
-    include 'projectowner.php';
+    include 'scrummaster.php';
 }
 ?>
 </body>
