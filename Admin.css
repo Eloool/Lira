@@ -5,7 +5,7 @@
     box-sizing: border-box;
 }
 
-body {
+.main {
     font-family: Arial, sans-serif;
     background-color: #0055A4; /* Bleu français */
     color: white;
