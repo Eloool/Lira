@@ -1,55 +1,39 @@
 <?php
-// Démarre la session pour gérer les cookies
-session_start();
+session_start(); // Démarre la session pour gérer les cookies
 
-// Inclure le fichier de connexion à la base de données
-include 'include/db_connect.php';
+include 'functions.php';
 
-// Vérifier si un cookie existe déjà
-if (isset($_COOKIE['username'])) {
-    $username = $_COOKIE['username'];
-} else {
-    $username = '';
-}
+$conn = db_connect();
 
-// Gestion de la connexion
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nom = $_POST['nom'];
     $prenom = $_POST['prenom'];
     $password = $_POST['password'];
 
-    // Vérifier si la connexion à la base de données est bien établie
+    // Vérifier la connexion à la base de données
     if ($conn->connect_error) {
         die("Erreur de connexion à la base de données: " . $conn->connect_error);
     }
 
-    // Préparer la requête SQL pour récupérer l'utilisateur
+    // Préparer la requête SQL
     $sql = "SELECT * FROM utilisateurs WHERE NomU = ? AND PrenomU = ?";
     $stmt = $conn->prepare($sql);
-
     if ($stmt === false) {
         die("Erreur dans la requête SQL: " . $conn->error);
     }
 
     $stmt->bind_param("ss", $nom, $prenom);
     $stmt->execute();
-
-    // Récupérer le résultat
     $result = $stmt->get_result();
-
-    if ($result === false) {
-        die("Erreur lors de la récupération des résultats: " . $stmt->error);
-    }
 
     // Vérifier si l'utilisateur existe
     if ($result->num_rows > 0) {
-        // L'utilisateur existe, on récupère ses informations
         $row = $result->fetch_assoc();
 
         // Vérifier si le mot de passe est correct
         if (password_verify($password, $row['MotDePasseU'])) {
-            // Définir un cookie valable 7 jours
-            setcookie("username", $nom, time() + (7 * 24 * 60 * 60), "/");
+            // Stocker l'ID de l'utilisateur dans la session
+            $_SESSION['user_id'] = $row['IdU'];
 
             // Vérifier si l'utilisateur est un administrateur
             if ($row['is_admin'] == 1) {
@@ -59,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else {
                 echo '<div style="background-color: #0055A4;color: white;padding: 15px;border-radius: 5px;text-align: center;font-weight: bold;box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
                 position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">Connexion réussie. Bienvenue, $nom $prenom!</div>';
-                header("refresh:3;url=Acceuil.php");  // Redirection vers la page d'accueil après 3 secondes
+                header("refresh:3;url=acceuil.php");  // Redirection vers la page d'accueil après 3 secondes
             }
             exit();  // Terminer le script pour éviter que le reste de la page ne s'exécute
         } else {
@@ -84,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <h2>Page de connexion</h2>
 <form method="POST" action="connexion.php">
     <label for="nom">Nom :</label>
-    <input type="text" id="nom" name="nom" value="<?php echo htmlspecialchars($username); ?>" required><br>
+    <input type="text" id="nom" name="nom" value="" required><br>
 
     <label for="prenom">Prénom :</label>
     <input type="text" id="prenom" name="prenom" required><br>
@@ -97,3 +81,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 </body>
 </html>
+
+

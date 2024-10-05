@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="Admin.css">
     <title>Page Admin</title>
 </head>
 <body>
+
+
+<?php
+include 'header.php';
+?>
+<div class="admin">
 
 <?php
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -14,6 +19,9 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 // Démarre la session pour vérifier si l'utilisateur est connecté
 session_start();
+if (!isset($_SESSION['token'])) {
+    $_SESSION['token'] = bin2hex(random_bytes(32)); // Générer un token sécurisé
+}
 
 
 mysqli_report(MYSQLI_REPORT_OFF); 
@@ -24,6 +32,7 @@ if ( $mysqli->connect_errno ) {
     " errDesc=". $mysqli -> connect_error;
  exit();
  }
+
 
 // Fonction pour ajouter un utilisateur
 function ajouterUtilisateur($nom, $prenom, $mot_de_passe, $specialite) {
@@ -64,6 +73,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["nom"], $_POST["prenom"
     ajouterUtilisateur($nom, $prenom, $mot_de_passe, $specialite);
 }
 
+
+
 // Gestion de la mise à jour d'un utilisateur existant
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
     $ancien_nom = $_POST['ancien_nom'];
@@ -82,12 +93,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
         echo "Erreur lors de la mise à jour de l'utilisateur : " . $conn->error;
     }
 }
+
 // Si le formulaire est soumis, mettre à jour l'utilisateur
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Nomeq"])) {
     $NomPrj = $_POST["Nomeq"];
 
     ajouterUtilisateur($NomPrj);
 }
+
+
 
 // Fonction pour ajouter une équipe et affecter un Scrum Master avec son rôle
 function ajouterEquipeEtAffecterRoles($NomEq, $IdScrumMaster) {
@@ -157,7 +171,7 @@ function ajouterEquipeEtAffecterRoles($NomEq, $IdScrumMaster) {
         if ($stmtAssociation->execute()) {
             echo "Scrum Master et rôle associés à l'équipe avec succès.<br>";
         } else {
-            echo "Erreur lors de l'association du Scrum Master et du rôle: " . $stmtAssociation->error;
+            echo "Erreur : ce ScrumMatser est déjà lié à une autre équipe <br>";
         }
         $stmtAssociation->close();
 
@@ -172,10 +186,18 @@ function ajouterEquipeEtAffecterRoles($NomEq, $IdScrumMaster) {
 }
 
 // Gestion de la soumission du formulaire
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["NomEq"]) && isset($_POST["IdScrumMaster"])) {
-    $NomEq = $_POST["NomEq"];
-    $IdScrumMaster = $_POST["IdScrumMaster"];
-    ajouterEquipeEtAffecterRoles($NomEq, $IdScrumMaster);
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["NomEq"]) && isset($_POST["IdScrumMaster"]) && isset($_POST['token'])) {
+    if (hash_equals($_SESSION['token'], $_POST['token'])) { // Vérification du token CSRF
+        $NomEq = $_POST["NomEq"];
+        $IdScrumMaster = $_POST["IdScrumMaster"];
+        ajouterEquipeEtAffecterRoles($NomEq, $IdScrumMaster);
+        
+        // Redirection après le traitement du formulaire pour éviter soumission multiple
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit; // Assurez-vous de terminer le script après redirection
+    } else {
+        echo "Erreur : Token CSRF invalide.";
+    }
 }
 
 // Récupérer les utilisateurs pour le formulaire
@@ -190,8 +212,10 @@ if (!$stmtUsers->execute()) {
 
 $resultUsers = $stmtUsers->get_result();    
 
+
 $mysqli->close(); 
 ?>
+
     <div>
         <p><b><u>Tableau de bord des activités</u></b></p>
     </div>
@@ -223,6 +247,8 @@ $mysqli->close();
         <input type="submit" value="Ajouter un nouvel utilisateur">
 
     </form>
+    
+
     <!-- Formulaire pour modifier un utilisateur -->
     <form action="" method="POST" >
     <h3>Mise à jour d'un utilisateur existant</h3>
@@ -244,19 +270,25 @@ $mysqli->close();
     <input type="submit" value="Mettre à jour l'utilisateur">
 </form>
     
+
 <!-- Formulaire pour ajouter une équipe -->
 <form method="POST">
-    <h3> Ajouter une équipe + ScrumMaster</h3>
-        Nom de l'équipe : <input type="text" name="NomEq" required><br>
-        Scrum Master :
-        <select name="IdScrumMaster" required>
-            <option value="">Sélectionner un Scrum Master</option>
-            <?php while ($row = $resultUsers->fetch_assoc()): ?>
-                <option value="<?= $row['IdU'] ?>"><?= htmlspecialchars($row['FullName']) ?></option>
-            <?php endwhile; ?>
-        </select><br>
-        <input type="submit" value="Ajouter Équipe">
-    </form>
+    <h3>Ajouter une équipe + ScrumMaster</h3>
+    
+    <!-- Inclure le token CSRF dans le formulaire -->
+    <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
+    
+    Nom de l'équipe : <input type="text" name="NomEq" required><br>
+    Scrum Master :
+    <select name="IdScrumMaster" required>
+        <option value="">Sélectionner un Scrum Master</option>
+        <?php while ($row = $resultUsers->fetch_assoc()): ?>
+            <option value="<?= $row['IdU'] ?>"><?= htmlspecialchars($row['FullName']) ?></option>
+        <?php endwhile; ?>
+    </select><br>
+    
+    <input type="submit" value="Ajouter Équipe">
+</form>
 
 
 </body> 

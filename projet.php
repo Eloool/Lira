@@ -1,123 +1,131 @@
 <?php
-session_start();
+session_start(); // Démarre la session
 
 // Inclure le fichier de connexion à la base de données
-include 'include/db_connect.php';
+include 'functions.php';
 
-if (isset($_COOKIE['username'])) {
-    $username = $_COOKIE['username'];
-} else {
-    
-    header("refresh:0;url=connexion.php");
+// Connexion à la base de données
+$conn = db_connect();
+if (!$conn) {
+    die("Erreur de connexion à la base de données.");
 }
 
-function get_roles_for_user_for_project($conn,$user_id,$project_id){
-    $sql = "SELECT IdR
-            FROM rolesutilisateurprojet
-            WHERE IdU = ? AND IdEq = ?";
-
-    // Préparation de la requête
-    if ($stmt = $conn->prepare($sql)) {
-        // Liaison du paramètre (le ? correspond à $user_id)
-        $stmt->bind_param('ii', $user_id, $project_id);
-
-        // Exécution de la requête
-        $stmt->execute();
-
-        // Récupération des résultats
-        $result = $stmt->get_result();
-
-        // Récupération des enregistrements sous forme de tableau associatif
-        return $result->fetch_all(MYSQLI_ASSOC);
-    } else {
-        // Gestion de l'erreur si la requête échoue
-        die("Erreur dans la requête : " . $conn->error);
-    }
+// Vérifiez si l'utilisateur est connecté en vérifiant la session
+if (!isset($_SESSION['user_id'])) {
+    // Si l'utilisateur n'est pas connecté, redirigez vers la page de connexion
+    header("Location: connexion.php");
+    exit(); // Arrête l'exécution du script
 }
 
-function get_taches_for_user_by_project($conn,$user_id,$project_id){
-    $sql = "SELECT TitreT
-            FROM taches
-            JOIN equipesprj ON taches.IdEq = equipesprj.IdEq
-            JOIN rolesutilisateurprojet ON rolesutilisateurprojet.IdEq = equipesprj.IdEq
-            WHERE rolesutilisateurprojet.IdU = ? AND equipesprj.IdEq = ?";
+// Récupération de l'ID de l'utilisateur depuis la session
+$ID_user = $_SESSION['user_id'];
 
-    // Préparation de la requête
-    if ($stmt = $conn->prepare($sql)) {
-        // Liaison du paramètre (le ? correspond à $user_id)
-        $stmt->bind_param('ii', $user_id, $project_id);
+// Récupération de l'ID du projet depuis l'URL
+$project_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-        // Exécution de la requête
-        $stmt->execute();
-
-        // Récupération des résultats
-        $result = $stmt->get_result();
-
-        // Récupération des enregistrements sous forme de tableau associatif
-        return $result->fetch_all(MYSQLI_ASSOC);
-    } else {
-        // Gestion de l'erreur si la requête échoue
-        die("Erreur dans la requête : " . $conn->error);
-    }
+// Vérifiez si l'ID du projet est valide
+if ($project_id <= 0) {
+    echo "ID de projet non spécifié.";
+    exit();
 }
-$ID_user = 3;
-$project_id = 3;
-$taches = get_taches_for_user_by_project($conn,$ID_user,$project_id);
-$Roleuser = get_roles_for_user_for_project($conn,$ID_user,$project_id)[0]['IdR'];
+
+// Récupérer les tâches pour l'utilisateur et le projet spécifiés
+$taches = get_tasks_by_project($conn, $project_id);
+$Roleuser = get_roles_for_user_for_project($conn, $ID_user, $project_id)[0]['IdR'];
+
+// Ici, vous pouvez continuer à traiter les tâches et afficher les informations du projet
+
+
+$etats = get_etats($conn);
+
+if (isset($_POST['Changer'])) {
+    // Récupérer les données du formulaire
+    $tacheID =$_POST['tache'];
+    $etatID =$_POST['etat'];
+
+    // Assigner le rôle à l'utilisateur pour le projet sélectionné
+    $UpdateRoleQuery = "UPDATE sprintbacklog SET IdEtat =  ? WHERE IdT = ? ";
+    $stmt = $conn->prepare($UpdateRoleQuery);
+    $stmt->bind_param('ii', $etatID, $tacheID);
+    $stmt->execute();
+}
 ?>
-
-
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Gestion de Projet</title>
+    <title>Document</title>
 </head>
 <body>
     <?php
-    include "header.php";
-    $sql = "SELECT NomEq FROM equipesprj WHERE IdEq = ?";
-    $nomproj = "";
+    include "header.php" ;
+    $sql = "SELECT NomEq
+            FROM equipesprj
+            WHERE IdEq = ?";
+    $nomproj="";
 
-    if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param('i', $project_id);
+     if ($stmt = $conn->prepare($sql)) {
+        // Liaison du paramètre (le ? correspond à $user_id)
+        $stmt->bind_param('i',$project_id);
+
+        // Exécution de la requête
         $stmt->execute();
+
+        // Récupération des résultats
         $result = $stmt->get_result();
-        $nomproj = $result->fetch_all(MYSQLI_ASSOC)[0]['NomEq'];
+
+        // Récupération des enregistrements sous forme de tableau associatif
+         $nomproj= $result->fetch_all(MYSQLI_ASSOC)[0]['NomEq'];
     } else {
+        // Gestion de l'erreur si la requête échoue
         die("Erreur dans la requête : " . $conn->error);
     }
     echo $nomproj;
     echo "<br>";
     ?>
+<?php foreach ($taches as $tache) : ?>
+    <tr>
+        <td><?= htmlspecialchars($tache['TitreT']) ?></td>
 
-    <!-- Affichage des tâches -->
-    <?php foreach ($taches as $tache) : ?>
-        <tr>
-            <td><?= htmlspecialchars($tache['TitreT']) ?></td>
-        </tr>
-    <?php endforeach; ?>
+        <form method="post" action="" id="Formulaire_<?= $tache['IdT'] ?>">
+            <input type="hidden" name="tache" value="<?= $tache['IdT'] ?>">
 
-    <a href="ppvote.php">
-    <?php
-    if ($Roleuser === 'SM') {
-        echo "Lancer Planning Poker";
-    } else {
-        echo "Participer au Planning Poker";
-    }
-    echo "</a>";
-   
-    if ($Roleuser === 'PO') {
-        include 'projectowner.php';
-    }
-   
-    if ($Roleuser === 'SM') {
-        include 'include/Ajout_MF.php';
-    }
+            <select name="etat" id="etat-tache">
+                <?php
+                $ide = get_etat_of_task($conn, $tache['IdT']) - 1;
+                echo "<option value='" . $ide . "'>" . $etats[$ide]['DescEtat'] . "</option>";
+                foreach ($etats as $etat) :
+                    if ($etat['IdEtat'] != $ide + 1) {
+                        echo "<option value='" . $etat['IdEtat'] . "'>" . $etat['DescEtat'] . "</option>";
+                    }
+                endforeach;
+                ?>
+            </select>
 
+            <input type="submit" value="Changer" name="Changer"/>
+        </form>
+    </tr>
+    <br><br>
+<?php endforeach; ?>
 
-    ?>
+<a href="ppvote.php">
+<?php
+if($Roleuser==='SM'){
+    echo "Lancer Planning Poker";
+}
+else{
+    echo "Participer au Planning Poker";
+}
+echo "</a>";
+
+if($Roleuser==='PO'){
+    include 'projectowner.php';
+}
+if($Roleuser==='SM'){
+    include 'projectowner.php';
+}
+?>
 </body>
 </html>

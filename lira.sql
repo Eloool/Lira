@@ -161,7 +161,7 @@ INSERT INTO `roles` (`IdR`, `DescR`) VALUES
 --
 
 CREATE TABLE `rolesutilisateurprojet` (
-  `IdU` smallint(6) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `IdU` smallint(6) NOT NULL ,
   `IdR` varchar(6) NOT NULL,
   `IdEq` smallint(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -372,6 +372,7 @@ ALTER TABLE `roles`
 -- Index pour la table `rolesutilisateurprojet`
 --
 ALTER TABLE `rolesutilisateurprojet`
+  ADD PRIMARY KEY (`IdR`,`IdEq`),
   ADD KEY `IdR` (`IdR`),
   ADD KEY `IdEq` (`IdEq`),
   ADD KEY `FK_RoleUtil_Utilisateurs` (`IdU`);
