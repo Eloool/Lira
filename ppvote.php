@@ -244,7 +244,7 @@ $RoleUser = get_roles_for_user_for_project($conn,$ID_user,$project_id)[0]['IdR']
     }
     if(array_key_exists('beginBtn', $_POST)) {
         begin_vote($conn, $project_id);
-        header("Location: ppvote1.PHP");
+        header("Location: ppvote1.PHP?id=$project_id");
     }
     ?>
     <br>

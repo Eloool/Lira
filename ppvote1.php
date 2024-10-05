@@ -4,11 +4,19 @@ session_start();
 // Inclure le fichier de connexion à la base de données
 include 'include/db_connect.php';
 
-if (isset($_COOKIE['username'])) {
-    $username = $_COOKIE['username'];
-} else {
-    $username = '';
-    header("refresh:0;url=connexion.php");
+$ID_user = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+
+if (!$ID_user) {
+    // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
+    header("Location: login.php");
+    exit();
+}
+$project_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+// Vérifiez si l'ID du projet est valide
+if ($project_id <= 0) {
+    echo "ID de projet non spécifié.";
+    exit();
 }
 
 function get_roles_for_user_for_project($conn,$user_id,$project_id){
@@ -209,8 +217,6 @@ function get_task_estimations($conn){
     }
 }
 
-$ID_user = 9;
-$project_id = 8;
 $RoleUser = get_roles_for_user_for_project($conn,$ID_user,$project_id)[0]['IdR'];
 
 ?>
@@ -233,12 +239,12 @@ $RoleUser = get_roles_for_user_for_project($conn,$ID_user,$project_id)[0]['IdR']
     //S'il quitte sur le bouton pour quitter le PP, on le déconnecte du PP et redirige vers sa page projet
     if(array_key_exists('leavePP', $_POST)) {
         set_pp_participant($conn, $project_id, $ID_user, 0);
-        header("Location: projet.PHP");
+        header("Location: projet.PHP?id=$project_id");
         exit;
     }
     if(array_key_exists('beginBtn', $_POST)) {
         begin_vote($conn, $project_id);
-        header("Location: ppvote1.PHP");
+        header("Location: ppvote1.PHP?id=$project_id");
     }
     ?>
     <br>
