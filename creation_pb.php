@@ -12,7 +12,7 @@
     <?php
         $titre = $_POST['titre'] ?? null;
         $userStory = $_POST['userStory'] ?? null;
-        $idEq = 1; //il faut récup l'id du projet/equipe
+        $idEq = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         $cout = $_POST['cout'] ?? null;
         $idPrio = $_POST['idPrio'] ?? null;
         if (!strlen($cout)) $cout="null";
@@ -26,7 +26,7 @@
             $cout = $conn->real_escape_string($cout);
             $idPrio = $conn->real_escape_string($idPrio);
             $sql = "INSERT INTO taches
-                    (TitreT, UserStoryT, IdEq, CoutT, IdPriorite)
+                    (TitreT, UserStoryT, IdEq, IdCout, IdPriorite)
                     VALUES ('$titre', '$userStory', '$idEq', '$cout', $idPrio)";
             if ($conn->query($sql) !== TRUE) {
                 echo "Erreur lors de l'ajout : " . $conn->error;
