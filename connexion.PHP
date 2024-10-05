@@ -35,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Requête SQL avec un paramètre
             $sql = "CALL Change_State_User(?);";
 
+
             // Préparation de la requête
             $stmt = $conn->prepare($sql);
 
@@ -46,24 +47,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             //Vérifier si l'utilisateur n'est pas déjà connecté
             if($row['is_connected'] == 0){
-            // Stocker l'ID de l'utilisateur dans la session
-            $_SESSION['user_id'] = $row['IdU'];
+                // Définir un cookie valable 7 jours
+                setcookie("username", $nom, time() + (7 * 24 * 60 * 60), "/");
 
-            // Vérifier si l'utilisateur est un administrateur
-            if ($row['is_admin'] == 1) {
-                echo '<div style="background-color: #0055A4;color: white;padding: 15px;border-radius: 5px;text-align: center;font-weight: bold;box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-                position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">Connexion réussie en tant qu\'administrateur. Redirection vers la page d\'administration...</div>';
-                header("refresh:3;url=Admin.php");  // Redirection vers la page admin après 3 secondes
-            } else {
-                echo '<div style="background-color: #0055A4;color: white;padding: 15px;border-radius: 5px;text-align: center;font-weight: bold;box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-                position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">Connexion réussie. Bienvenue, $nom $prenom!</div>';
-                header("refresh:3;url=acceuil.php");  // Redirection vers la page d'accueil après 3 secondes
+
+                // Stocker l'ID utilisateur et le rôle dans la session
+                $_SESSION['user_id'] = $row['IdU']; // ID utilisateur
+
+                // Vérifier si l'utilisateur est un administrateur
+                if ($row['is_admin'] == 1) {
+                    echo '<div style="background-color: #0055A4;color: white;padding: 15px;border-radius: 5px;text-align: center;font-weight: bold;box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                    position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">Connexion réussie en tant qu\'administrateur. Redirection vers la page d\'administration...</div>';
+                    header("refresh:3;url=Admin.php");  // Redirection vers la page admin après 3 secondes
+                } else {
+                    echo '<div style="background-color: #0055A4;color: white;padding: 15px;border-radius: 5px;text-align: center;font-weight: bold;box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                    position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);">Connexion réussie. Bienvenue, '.$nom. ' '. $prenom.' !</div>';
+                    header("refresh:3;url=accueil.php");  // Redirection vers la page d'accueil après 3 secondes
+                }
+                exit();  // Terminer le script pour éviter que le reste de la page ne s'exécute
+
             }
-                else {
+            else {
                 echo "Utilisateur déjà connecté";
             }
-            }
-            exit();  // Terminer le script pour éviter que le reste de la page ne s'exécute
+            
         } else {
             echo "Mot de passe incorrect.";
         }

@@ -30,7 +30,9 @@ SET time_zone = "+00:00";
 CREATE TABLE `equipesprj` (
   `IdEq` smallint(11) PRIMARY KEY NOT NULL  AUTO_INCREMENT,
   `NomEq` varchar(100) NOT NULL,
-  `descProj` VARCHAR(55)
+  `descProj` VARCHAR(55),
+  `PP` tinyint(1) DEFAULT 0,
+  `votingTask` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -188,7 +190,8 @@ INSERT INTO `roles` (`IdR`, `DescR`) VALUES
 CREATE TABLE `rolesutilisateurprojet` (
   `IdU` smallint(6) NOT NULL ,
   `IdR` varchar(6) NOT NULL,
-  `IdEq` smallint(6) NOT NULL
+  `IdEq` smallint(6) NOT NULL,
+  `inPP` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -204,8 +207,8 @@ INSERT INTO `rolesutilisateurprojet` (`IdU`, `IdR`, `IdEq`) VALUES
 (6, 'SM', 6),
 (7, 'RefUi', 7),
 (8, 'R_Anim', 8),
-(9, 'R_Mode', 9),
-(10, 'SM', 10),
+(9, 'SM', 8),
+(10, 'R_Mode', 10),
 (11, 'PO', 11),
 (12, 'RefDev', 12);
 
@@ -360,24 +363,6 @@ INSERT INTO `utilisateurs` (`IdU`, `NomU`, `PrenomU`, `MotDePasseU`, `Specialite
 (13, 'JDO', 'JDO', '$2y$10$PzO/zdodF3DP/7KLR1vHUu37OcJjRgQRefXy.f9dKom3beTHDsV.6', 'Animateur', 1),
 (14, 'oui', 'oui', '$2y$10$VrnlmMX76zTjD0y.GUPA/O/idnOUlNqNbnlNkqlx/3vBi0Ksda0Zq', 'Développeur', 0);
 
-
--- --------------------------------------------------------
-
---
--- Structure de la table `VoterPP`
---
-
-CREATE TABLE `VoterPP` (
-  `IdU` smallint(6) NOT NULL,
-  `IdT` int(11) NOT NULL,
-  `IdCout` smallint(6) NOT NULL DEFAULT 1,
-  PRIMARY KEY (`IdU`, `IdT`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-
--- --------------------------------------------------------
-
-
 --
 -- Index pour les tables déchargées
 --
@@ -407,6 +392,12 @@ ALTER TABLE `prioritestaches`
   ADD PRIMARY KEY (`idPriorite`);
 
 --
+-- Index pour la table `coutstaches`
+--
+ALTER TABLE `coutstaches`
+  ADD PRIMARY KEY (`IdCout`);
+
+--
 -- Index pour la table `roles`
 --
 ALTER TABLE `roles`
@@ -416,7 +407,6 @@ ALTER TABLE `roles`
 -- Index pour la table `rolesutilisateurprojet`
 --
 ALTER TABLE `rolesutilisateurprojet`
-  ADD PRIMARY KEY (`IdR`,`IdEq`),
   ADD KEY `IdR` (`IdR`),
   ADD KEY `IdEq` (`IdEq`),
   ADD KEY `FK_RoleUtil_Utilisateurs` (`IdU`);
@@ -440,7 +430,16 @@ ALTER TABLE `sprints`
 --
 ALTER TABLE `taches`
   ADD KEY `IdPriorite` (`IdPriorite`),
-  ADD KEY `IndexIdEq` (`IdEq`);
+  ADD KEY `IndexIdEq` (`IdEq`),
+  ADD KEY `IndexCout` (`IdCout`);
+
+--
+-- Index pour la table `VoterPP`
+--
+ALTER TABLE `VoterPP`
+  ADD KEY `IdU` (`IdU`),
+  ADD KEY `IdT` (`IdT`),
+  ADD KEY `IndexCout` (`IdCout`);
 
 --
 -- Index pour la table `VoterPP`
@@ -453,6 +452,8 @@ ALTER TABLE `VoterPP`
 --
 -- Index pour la table `utilisateurs`
 --
+ALTER TABLE `utilisateurs`
+  ADD PRIMARY KEY (`IdU`);
 
 --
 -- AUTO_INCREMENT pour les tables déchargées
@@ -501,8 +502,18 @@ ALTER TABLE `sprints`
 --
 ALTER TABLE `taches`
   ADD CONSTRAINT `FK_TachesEquipes` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`),
-  ADD CONSTRAINT `FK_Taches_Priorite` FOREIGN KEY (`IdPriorite`) REFERENCES `prioritestaches` (`idPriorite`);
+  ADD CONSTRAINT `FK_Taches_Priorite` FOREIGN KEY (`IdPriorite`) REFERENCES `prioritestaches` (`idPriorite`),
+  ADD CONSTRAINT `FK_Tache_Cout` FOREIGN KEY (`IdCout`) REFERENCES `coutstaches` (`IdCout`);
+
+--
+-- Contraintes pour la table `VoterPP`
+--
+ALTER TABLE `VoterPP`
+  ADD CONSTRAINT `FK_VoterPP_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`),
+  ADD CONSTRAINT `FK_VoterPP_Taches` FOREIGN KEY (`IdT`) REFERENCES `taches` (`idT`),
+  ADD CONSTRAINT `FK_VoterPP_Cout` FOREIGN KEY (`IdCout`) REFERENCES `coutstaches` (`IdCout`);
 COMMIT;
+
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
@@ -576,6 +587,40 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+
+-- procedure qui change l'etat de connection de l'utilisateur en parametre
+
+DROP PROCEDURE IF EXISTS  Change_State_User  ;
+
+DELIMITER //
+CREATE PROCEDURE Change_State_User
+(IN Id_User INT) 
+BEGIN
+    DECLARE connect INT;
+    DECLARE new_state INT;
+    SET connect = (SELECT is_connected
+		   FROM utilisateurs
+		   WHERE IdU=Id_User);
+IF (connect=0) THEN
+    SET new_state=1;
+ELSE 
+    SET new_state=0;
+END IF ;
+
+UPDATE utilisateurs
+    SET is_connected=new_state
+    WHERE IdU = Id_User;
+
+
+END //
+DELIMITER ;
+
+
+
+
+
 
 
 -- procedure pour avoir la somme des cout des taches d'un sprint
