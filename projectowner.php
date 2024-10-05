@@ -6,7 +6,7 @@
     </form>
 
     <?php
-        $idEq = 1; //il faut récup l'id du projet actuel
+        $idEq = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         $defProj = $_POST['defProj'] ?? null;
 
         if ($defProj !== null) {
@@ -30,7 +30,7 @@
     </form>
 
     <?php
-        $idSpr = 1; //il faut récup l'id du sprint actuel
+        $idSpr = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         $revSpr = $_POST['revSpr'] ?? null;
 
         if ($revSpr !== null) {
