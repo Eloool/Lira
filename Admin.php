@@ -212,11 +212,10 @@ if (!$stmtUsers->execute()) {
 
 $resultUsers = $stmtUsers->get_result();    
 
-
-$mysqli->close(); 
 ?>
 
-    <div>
+
+<div>
         <p><b><u>Tableau de bord des activités</u></b></p>
     </div>
 
@@ -289,6 +288,71 @@ $mysqli->close();
     
     <input type="submit" value="Ajouter Équipe">
 </form>
+
+
+<?php
+// Récupérer les équipes et les utilisateurs associés
+$sql = "SELECT equipesprj.NomEq, utilisateurs.NomU, utilisateurs.PrenomU, roles.IdR 
+        FROM equipesprj
+        LEFT JOIN rolesutilisateurprojet ON equipesprj.IdEq = rolesutilisateurprojet.IdEq
+        LEFT JOIN utilisateurs ON rolesutilisateurprojet.IdU = utilisateurs.IdU
+        LEFT JOIN roles ON rolesutilisateurprojet.IdR = roles.IdR
+        ORDER BY equipesprj.NomEq, utilisateurs.NomU"; // Trier par équipe puis par utilisateur
+
+$result = $mysqli->query($sql);
+if (!$result) {
+    die("Erreur de requête : " . $mysqli->error);
+}
+
+// Tableau pour afficher les équipes et leurs utilisateurs
+echo "<h3>Liste des équipes et utilisateurs associés</h3>";
+echo "<table border='1'>";
+echo "<tr><th>Équipe</th><th>Utilisateur</th><th>Rôle</th></tr>";
+
+// Variable pour stocker l'équipe actuelle et vérifier si elle a des utilisateurs
+$currentTeam = null;
+$teamHasUser = false;
+
+while ($row = $result->fetch_assoc()) {
+    $teamName = $row['NomEq'];
+    $userName = $row['NomU'] ? $row['NomU'] . ' ' . $row['PrenomU'] : null; // Null si pas d'utilisateur
+    $role = $row['IdR']; // À adapter pour afficher le rôle sous forme textuelle si nécessaire
+    
+    if ($teamName !== $currentTeam) {
+        // Afficher la nouvelle équipe
+        echo "<tr><td><strong>$teamName</strong></td>";
+        
+        if ($userName) {
+            echo "<td>$userName</td><td>$role</td></tr>";
+            $teamHasUser = true; // Marquer que cette équipe a un utilisateur
+        } else {
+            // Si pas d'utilisateur pour cette équipe
+            echo "<td colspan='2'>Aucun utilisateur lié à cette équipe</td></tr>";
+            $teamHasUser = false; // Marquer qu'il n'y a pas d'utilisateur
+        }
+        
+        // Mettre à jour l'équipe courante
+        $currentTeam = $teamName;
+    } else {
+        // Afficher les utilisateurs supplémentaires de la même équipe
+        if ($userName) {
+            echo "<tr><td></td><td>$userName</td><td>$role</td></tr>";
+            $teamHasUser = true;
+        }
+    }
+}
+
+// Si la dernière équipe n'avait pas d'utilisateurs
+if (!$teamHasUser) {
+    echo "<tr><td></td><td colspan='2'>Aucun utilisateur lié à cette équipe</td></tr>";
+}
+
+echo "</table>";
+
+
+$mysqli->close(); 
+?>
+
 
 
 </body> 
