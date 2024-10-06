@@ -48,5 +48,29 @@
     ?>
     <br>
     <br>
+    <?php foreach ($taches as $tache) : ?>
+    <tr>
+        <td><?= htmlspecialchars($tache['TitreT']) ?></td>
+
+        <form method="post" action="" id="Formulaire_<?= $tache['IdT'] ?>">
+            <input type="hidden" name="tache" value="<?= $tache['IdT'] ?>">
+
+            <select name="etat" id="etat-tache">
+                <?php
+                $ide = get_etat_of_task($conn, $tache['IdT']) - 1;
+                echo "<option value='" . $ide . "'>" . $etats[$ide]['DescEtat'] . "</option>";
+                foreach ($etats as $etat) :
+                    if ($etat['IdEtat'] != $ide + 1) {
+                        echo "<option value='" . $etat['IdEtat'] . "'>" . $etat['DescEtat'] . "</option>";
+                    }
+                endforeach;
+                ?>
+            </select>
+
+            <input type="submit" value="Changer" name="Changer"/>
+        </form>
+    </tr>
+    <br><br>
+<?php endforeach; ?>
     <?php include "bac_a_sable.php";?>
 

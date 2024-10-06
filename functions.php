@@ -141,7 +141,7 @@ function get_roles_for_user_for_project($conn,$user_id,$project_id){
 }
 
 function get_tasks_for_user_by_project($conn,$user_id,$project_id){
-    $sql = "SELECT TitreT
+    $sql = "SELECT TitreT,IdT
             FROM taches
             JOIN equipesprj ON taches.IdEq = equipesprj.IdEq
             JOIN rolesutilisateurprojet ON rolesutilisateurprojet.IdEq = equipesprj.IdEq

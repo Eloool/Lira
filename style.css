@@ -127,7 +127,7 @@ footer {
 }
 
 /* Style du header */
-.header {
+header {
     background-color: #0056b3; /* Bleu correspondant au thème */
     color: white;
     width: 100%; /* Prend toute la largeur */
@@ -142,19 +142,19 @@ footer {
 }
 
 /* Logo du header */
-.header .logo img {
+header .logo img {
     height: 80px;
     width: auto;
 }
 
 /* Titre centré dans le header */
-.header .title {
+header .title {
     font-size: 36px;
     font-weight: bold;
 }
 
 /* Style des boutons dans le header */
-.header .button {
+header .button {
     background-color: white;
     color: #0056b3;
     border: none;
@@ -167,7 +167,7 @@ footer {
     text-decoration: none;
 }
 
-.header .button:hover {
+header .button:hover {
     background-color: #0041a1;
     color: white;
 }

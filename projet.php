@@ -29,6 +29,7 @@ if ($project_id <= 0) {
 }
 
 // Récupérer les tâches pour l'utilisateur et le projet spécifiés
+$tachesuser = get_tasks_for_user_by_project($conn,$ID_user, $project_id);
 $taches = get_tasks_by_project($conn, $project_id);
 $Roleuser = get_roles_for_user_for_project($conn, $ID_user, $project_id)[0]['IdR'];
 
@@ -92,7 +93,7 @@ if (isset($_POST['Changer'])) {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($taches as $tache) : ?>
+                <?php foreach ($tachesuser as $tache) : ?>
                     <tr>
                         <td><?= htmlspecialchars($tache['TitreT']) ?></td>
                         <td>
@@ -129,5 +130,6 @@ if (isset($_POST['Changer'])) {
             include 'scrummaster.php';
         } ?>
     </div>
+
 </body>
 </html>
