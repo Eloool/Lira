@@ -4,8 +4,9 @@ function Suppr_cookie(){
     session_start();
     require_once 'functions.php';
     $conn = db_connect();
+    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
     // Suppression du cookie de username
-    if(isset($_COOKIE['username'])){
+    if($user_id){
         
         
         $sql = "CALL Change_State_User(?);";
@@ -28,6 +29,7 @@ if (isset($_GET['push_deconnextion'])) {
     Suppr_cookie();
 }
 ?>
+
 <header>
     <link rel="stylesheet" href="style.css">
         <div class="logo">
