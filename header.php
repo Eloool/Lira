@@ -12,11 +12,13 @@ if (isset($_GET['push_deconnextion'])) {
     Suppr_cookie();
 }
 ?>
-    <header class="header">
+
+<header class="header">
+    <link rel="stylesheet" href="style.css">
+
         <div class="logo">
             <img src="logo.png" alt="Logo" class="logo">
         </div>
-        <h1 class="title">LIRA</h1>
         <div>
         <a href="accueil.php">
             <button class="button">Accueil</button>
@@ -26,4 +28,4 @@ if (isset($_GET['push_deconnextion'])) {
         </a>
             
         </div>
-    </header>
+</header>

@@ -15,7 +15,7 @@ if ($user_id) {
     $user_tasks = get_user_tasks($conn, $user_id); // Tâches de l'utilisateur connecté
 } else {
     // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
-    header("Location: login.php");
+    header("Location: connexion.php");
     exit();
 }
 ?>
