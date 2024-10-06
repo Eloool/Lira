@@ -1,14 +1,10 @@
+    <!-- Saisie retrospective de sprint -->        
+    <h1>Saisie rétrospective de sprint</h1>
+    <form method="POST">
 
-<p>Page scrum master</p><br>
-
-
-
-<!-- Saisie retrospective de sprint -->
-<form method="POST">
-        <br>Saisie retrospective de sprint<br>
-        <textarea name="retSpr" rows="5" cols="50"></textarea><br>
-        <button type="submit">Valider</button>
-        <br><br><br>
+        <label for="retSpr">Rétrospective :</label>
+        <textarea name="retSpr" id="retSpr"  placeholder="Saisissez la rétrospective de sprint ici..." style="width: 340px; height: 17px;"></textarea>
+        <input type="submit" value="Valider">
     </form>
 
     <?php
@@ -22,20 +18,19 @@
                     WHERE IdS = $idSpr";
         
             if ($conn->query($sql) === FALSE) {
-                echo "Erreur lors de l'ajout : " . $conn->error;
+                echo "<p class='error-message'>Erreur lors de l'ajout : " . $conn->error . "</p>";
             }
         }
     ?>
 
-<!-- Création sprint -->
-<form method="POST">
-        <br>Créer un nouveau sprint<br><br>
-        Date début : <input type="text" name="dDebut"
-            placeholder="au format AAAA-MM-JJ" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"><br>
-        Date fin : <input type="text" name="dFin"
-            placeholder="au format AAAA-MM-JJ" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"><br>
-        <button type="submit">Valider</button>
-        <br><br><br>
+    <!-- Création sprint -->
+    <h1>Créer un nouveau sprint</h1>
+    <form method="POST">
+        <label for="dDebut">Date début :</label>
+        <input type="text" name="dDebut" id="dDebut" placeholder="au format AAAA-MM-JJ" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
+        <label for="dFin">Date fin :</label>
+        <input type="text" name="dFin" id="dFin" placeholder="au format AAAA-MM-JJ" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
+        <input type="submit" value="Valider">
     </form>
 
     <?php
@@ -50,8 +45,11 @@
                     (DateDebS, DateFinS, IdEq)
                     VALUES ('$dDebut', '$dFin', '$idEq')";
             if ($conn->query($sql) !== TRUE) {
-                echo "Erreur lors de l'ajout : " . $conn->error;
+                echo "<p class='error-message'>Erreur lors de l'ajout : " . $conn->error . "</p>";
             }
         }
+
         include "Include/Ajout_MF.php";
     ?>
+
+

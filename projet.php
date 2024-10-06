@@ -12,7 +12,6 @@ if (!$conn) {
 
 // Vérifiez si l'utilisateur est connecté en vérifiant la session
 if (!isset($_SESSION['user_id'])) {
-    // Si l'utilisateur n'est pas connecté, redirigez vers la page de connexion
     header("Location: connexion.php");
     exit(); // Arrête l'exécution du script
 }
@@ -33,33 +32,31 @@ if ($project_id <= 0) {
 $taches = get_tasks_by_project($conn, $project_id);
 $Roleuser = get_roles_for_user_for_project($conn, $ID_user, $project_id)[0]['IdR'];
 
-// Ici, vous pouvez continuer à traiter les tâches et afficher les informations du projet
-
-
+// Récupérer les états
 $etats = get_etats($conn);
 
 if (isset($_POST['Changer'])) {
-    // Récupérer les données du formulaire
-    $tacheID =$_POST['tache'];
-    $etatID =$_POST['etat'];
+    $tacheID = $_POST['tache'];
+    $etatID = $_POST['etat'];
 
-    // Assigner le rôle à l'utilisateur pour le projet sélectionné
+    // Mettre à jour l'état de la tâche
     $UpdateRoleQuery = "UPDATE sprintbacklog SET IdEtat =  ? WHERE IdT = ? ";
     $stmt = $conn->prepare($UpdateRoleQuery);
     $stmt->bind_param('ii', $etatID, $tacheID);
     $stmt->execute();
 }
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Document</title>
+    <title><?= htmlspecialchars($nomproj) ?></title>
 </head>
 <body>
-    <?php
+<?php
     include "header.php" ;
     $sql = "SELECT NomEq
             FROM equipesprj
@@ -82,50 +79,55 @@ if (isset($_POST['Changer'])) {
         // Gestion de l'erreur si la requête échoue
         die("Erreur dans la requête : " . $conn->error);
     }
-    echo $nomproj;
     echo "<br>";
     ?>
-<?php foreach ($taches as $tache) : ?>
-    <tr>
-        <td><?= htmlspecialchars($tache['TitreT']) ?></td>
+    <div class="admin">
+        <h1><?= htmlspecialchars($nomproj) ?></h1>
 
-        <form method="post" action="" id="Formulaire_<?= $tache['IdT'] ?>">
-            <input type="hidden" name="tache" value="<?= $tache['IdT'] ?>">
+        <table>
+            <thead>
+                <tr>
+                    <th>Tâches</th>
+                    <th>Changer l'état</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($taches as $tache) : ?>
+                    <tr>
+                        <td><?= htmlspecialchars($tache['TitreT']) ?></td>
+                        <td>
+                            <form method="post" action="" id="Formulaire_<?= $tache['IdT'] ?>">
+                                <input type="hidden" name="tache" value="<?= $tache['IdT'] ?>">
+                                <select name="etat" id="etat-tache">
+                                    <?php
+                                    $ide = get_etat_of_task($conn, $tache['IdT']) - 1;
+                                    echo "<option value='" . $ide . "'>" . $etats[$ide]['DescEtat'] . "</option>";
+                                    foreach ($etats as $etat) :
+                                        if ($etat['IdEtat'] != $ide + 1) {
+                                            echo "<option value='" . $etat['IdEtat'] . "'>" . $etat['DescEtat'] . "</option>";
+                                        }
+                                    endforeach;
+                                    ?>
+                                </select>
+                                <input type="submit" value="Changer" name="Changer"/>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
 
-            <select name="etat" id="etat-tache">
-                <?php
-                $ide = get_etat_of_task($conn, $tache['IdT']) - 1;
-                echo "<option value='" . $ide . "'>" . $etats[$ide]['DescEtat'] . "</option>";
-                foreach ($etats as $etat) :
-                    if ($etat['IdEtat'] != $ide + 1) {
-                        echo "<option value='" . $etat['IdEtat'] . "'>" . $etat['DescEtat'] . "</option>";
-                    }
-                endforeach;
-                ?>
-            </select>
+        <div class="planning-poker">
+            <a class="button" href="ppvote.php?id=<?= $project_id ?>">
+                <?= $Roleuser === 'SM' ? "Lancer Planning Poker" : "Participer au Planning Poker" ?>
+            </a>
+        </div>
 
-            <input type="submit" value="Changer" name="Changer"/>
-        </form>
-    </tr>
-    <br><br>
-<?php endforeach; ?>
-
-<a href="ppvote.php?id=<?= $project_id ?>">
-<?php
-if($Roleuser==='SM'){
-    echo "Lancer Planning Poker";
-}
-else{
-    echo "Participer au Planning Poker";
-}
-echo "</a>";
-
-if($Roleuser==='PO'){
-    include 'projectowner.php';
-}
-if($Roleuser==='SM'){
-    include 'scrummaster.php';
-}
-?>
+        <?php if ($Roleuser === 'PO') {
+            include 'projectowner.php';
+        } elseif ($Roleuser === 'SM') {
+            include 'scrummaster.php';
+        } ?>
+    </div>
 </body>
 </html>

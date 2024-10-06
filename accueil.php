@@ -26,59 +26,63 @@ if ($user_id) {
     <title>Tableau de bord</title>
 </head>
 <body>
-    <?php include "header.php";?>
+    <?php include "header.php"; ?>
     <h1>Tableau de bord</h1>
 
-    <h2>Tous les projets</h2>
-    <table>
-    <thead>
-    <tr>
-        <th>Nom du projet</th>
-        <th>Description</th>
-    </tr>
-</thead>
-<tbody>
-    <?php foreach ($all_projects as $project) : ?>
-        <tr>
-            <td><?= htmlspecialchars($project['NomEq']) ?></td>
-            <td><?= htmlspecialchars($project['descProj']) ?></td>
-        </tr>
-    <?php endforeach; ?>
-</tbody>
-</table>
-
-<?php if ($user_id) : ?>
-    <h2>Votre tableau de bord personnel</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Nom du projet</th>
-                <th>Vos tâches</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($user_projects as $project) : ?>
+    <div class="admin"> <!-- Conteneur pour tous les projets -->
+        <h2>Tous les projets</h2>
+        <table>
+            <thead>
                 <tr>
-                    <td>
-                        <!-- Lien vers la page du projet avec l'ID dans l'URL -->
-                        <a href="projet.php?id=<?= $project['IdEq'] ?>">
-                            <?= htmlspecialchars($project['NomEq']) ?>
-                        </a>
-                    </td>
-                    <td>
-                        <ul>
-                            <?php foreach ($user_tasks as $task) : ?>
-                                <?php if ($task['IdEq'] == $project['IdEq']) : ?>
-                                    <li><?= htmlspecialchars($task['TitreT']) ?></li>
-                                <?php endif; ?>
-                            <?php endforeach; ?>
-                        </ul>
-                    </td>
+                    <th>Nom du projet</th>
+                    <th>Description</th>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-<?php endif; ?>
+            </thead>
+            <tbody>
+                <?php foreach ($all_projects as $project) : ?>
+                    <tr>
+                        <td><?= htmlspecialchars($project['NomEq']) ?></td>
+                        <td><?= htmlspecialchars($project['descProj']) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <?php if ($user_id) : ?>
+        <div class="admin"> <!-- Conteneur pour le tableau personnel -->
+            <h2>Votre tableau de bord personnel</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom du projet</th>
+                        <th>Vos tâches</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($user_projects as $project) : ?>
+                        <tr>
+                            <td>
+                                <a href="projet.php?id=<?= $project['IdEq'] ?>">
+                                    <?= htmlspecialchars($project['NomEq']) ?>
+                                </a>
+                            </td>
+                            <td>
+                                <ul>
+                                    <?php foreach ($user_tasks as $task) : ?>
+                                        <?php if ($task['IdEq'] == $project['IdEq']) : ?>
+                                            <li><?= htmlspecialchars($task['TitreT']) ?></li>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
 
 </body>
 </html>
+
