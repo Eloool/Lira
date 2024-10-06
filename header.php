@@ -28,7 +28,7 @@ if (isset($_GET['push_deconnextion'])) {
     Suppr_cookie();
 }
 ?>
-
+<header>
     <link rel="stylesheet" href="style.css">
         <div class="logo">
             <img src="logo.png" alt="Logo" class="logo">
