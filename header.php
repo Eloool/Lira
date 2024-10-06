@@ -32,16 +32,15 @@ if (isset($_GET['push_deconnextion'])) {
 
 <header>
     <link rel="stylesheet" href="style.css">
-        <div class="logo">
-            <img src="logo.png" alt="Logo" class="logo">
-        </div>
-        <div>
+    <div class="logo">
+        <img src="logo.png" alt="Logo" class="logo">
+    </div>
+    <nav> <!-- Utilisation de <nav> pour la navigation -->
         <a href="accueil.php">
             <button class="button">Accueil</button>
         </a>
-            <a href='header.php?push_deconnextion=true'>
+        <a href='header.php?push_deconnextion=true'>
             <button class="button">Déconnexion</button>
         </a>
-            
-        </div>
+    </nav>
 </header>
