@@ -1,28 +1,22 @@
 <?php
-session_start(); // Démarre la session
+session_start();
 
-// Inclure le fichier de connexion à la base de données
 include 'functions.php';
 
-// Connexion à la base de données
 $conn = db_connect();
 if (!$conn) {
     die("Erreur de connexion à la base de données.");
 }
 
-// Vérifiez si l'utilisateur est connecté en vérifiant la session
 if (!isset($_SESSION['user_id'])) {
     header("Location: connexion.php");
-    exit(); // Arrête l'exécution du script
+    exit();
 }
 
-// Récupération de l'ID de l'utilisateur depuis la session
+// on récupère l'ID de l'utilisateur et du projet
 $ID_user = $_SESSION['user_id'];
-
-// Récupération de l'ID du projet depuis l'URL
 $project_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-// Vérifiez si l'ID du projet est valide
 if ($project_id <= 0) {
     echo "ID de projet non spécifié.";
     exit();
@@ -34,34 +28,26 @@ $sql = "SELECT NomEq
     $nomproj="";
 
      if ($stmt = $conn->prepare($sql)) {
-        // Liaison du paramètre (le ? correspond à $user_id)
         $stmt->bind_param('i',$project_id);
-
-        // Exécution de la requête
         $stmt->execute();
-
-        // Récupération des résultats
         $result = $stmt->get_result();
-
-        // Récupération des enregistrements sous forme de tableau associatif
          $nomproj= $result->fetch_all(MYSQLI_ASSOC)[0]['NomEq'];
     } else {
-        // Gestion de l'erreur si la requête échoue
         die("Erreur dans la requête : " . $conn->error);
     }
-// Récupérer les tâches pour l'utilisateur et le projet spécifiés
+
+// on récupère les tâches pour l'utilisateur et le projet spécifiés
 $tachesuser = get_tasks_for_user_by_project($conn,$ID_user, $project_id);
 $taches = get_tasks_by_project($conn, $project_id);
 $Roleuser = get_roles_for_user_for_project($conn, $ID_user, $project_id)[0]['IdR'];
-
-// Récupérer les états
+// on récupère les états
 $etats = get_etats($conn);
 
 if (isset($_POST['Changer'])) {
     $tacheID = $_POST['tache'];
     $etatID = $_POST['etat'];
 
-    // Mettre à jour l'état de la tâche
+    // on met à jour l'état de la tâche
     $UpdateRoleQuery = "UPDATE sprintbacklog SET IdEtat =  ? WHERE IdT = ? ";
     $stmt = $conn->prepare($UpdateRoleQuery);
     $stmt->bind_param('ii', $etatID, $tacheID);
