@@ -1,4 +1,3 @@
-/* Global reset for margins, paddings, and box-sizing */
 * {
     margin: 0;
     padding: 0;
@@ -7,14 +6,14 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #0055A4; /* Bleu français */
+    background-color: #0055A4;
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-    flex-direction: column; /* Permet d'avoir le h2 et le formulaire verticalement */
+    flex-direction: column;
 }
 
 h2 {
@@ -23,10 +22,9 @@ h2 {
     font-size: 2em;
 }
 
-/* Form styling */
 form {
     background-color: #FFF;
-    color: #0055A4; /* Texte bleu français */
+    color: #0055A4;
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
@@ -63,10 +61,9 @@ input[type="submit"] {
 }
 
 input[type="submit"]:hover {
-    background-color: #FFCC00; /* Jaune doré au survol */
+    background-color: #FFCC00;
 }
 
-/* Responsiveness */
 @media (max-width: 400px) {
     form {
         width: 90%;
@@ -86,6 +83,6 @@ input[type="submit"]:hover {
 }
 
 .admin-message:hover {
-    background-color: #FFCC00; /* Jaune doré au survol */
-    color: #0055A4; /* Change le texte en bleu français */
+    background-color: #FFCC00;
+    color: #0055A4;
 }
