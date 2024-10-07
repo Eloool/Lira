@@ -1,8 +1,7 @@
-<!-- Ajout tâche PB -->    
+<!-- formulaire pour ajouter une tâche au PB -->
 <h1>Ajouter une nouvelle tâche au PB</h1>
 <form method="POST" class="task-form">
 
-    
     <label for="titre">Titre de la tâche :</label>
     <input type="text" id="titre" name="titre" placeholder="Titre de la tâche">
 
@@ -32,6 +31,7 @@
         $userStory = $conn->real_escape_string($userStory);
         $cout = $conn->real_escape_string($cout);
         $idPrio = $conn->real_escape_string($idPrio);
+        // requête d'insertion dans le PB
         $sql = "INSERT INTO taches (TitreT, UserStoryT, IdEq, IdCout, IdPriorite)
                 VALUES ('$titre', '$userStory', '$idEq', '$cout', $idPrio)";
         if ($conn->query($sql) !== TRUE) {
