@@ -1,18 +1,17 @@
 <?php
-// Récupération de la description de l'idée et de l'ID d'équipe
+// on récupère la description de l'idée, l'ID d'équipe, et l'ID de l'utilisateur
 $descIdea = $_POST['descIdea'] ?? null;
 $idEq = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-
-// Récupération de l'ID de l'utilisateur connecté depuis la session
-$idU = $_SESSION['user_id'] ?? null; // Remplacez 'user_id' par la clé de session appropriée
+$idU = $_SESSION['user_id'] ?? null;
 
 if ($descIdea !== null && $idEq !== null && $idU !== null) {
-    // Échappez les caractères spéciaux pour éviter les injections SQL
     $descIdea = $conn->real_escape_string($descIdea);
-    $idEq = (int)$idEq; // Assurez-vous que l'ID d'équipe est un entier
-    $idU = (int)$idU; // Assurez-vous que l'ID de l'utilisateur est un entier
+    
+    // on s'assure que les IDs sont bien entiers
+    $idEq = (int)$idEq;
+    $idU = (int)$idU;
 
-    // Insertion de l'idée dans la base de données
+    // insertion de l'idée dans la base de données
     $sql = "INSERT INTO idees_bac_a_sable (desc_Idee_bas, IdU, IdEq) 
             VALUES ('$descIdea', $idU, $idEq)";
 
@@ -23,16 +22,15 @@ if ($descIdea !== null && $idEq !== null && $idU !== null) {
     }
 }
 
-// Gestion de la suppression
+// système de suppression
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $delete_id = (int)$_POST['delete_id'];
 
-    // Vérifiez si l'idée appartient à l'équipe de l'utilisateur
+    // on vérifie si l'idée appartient à l'équipe de l'utilisateur
     $sqlCheck = "SELECT IdEq FROM idees_bac_a_sable WHERE Id_Idee_bas = $delete_id AND IdU = $idU";
     $resultCheck = $conn->query($sqlCheck);
 
     if ($resultCheck->num_rows > 0) {
-        // ID existe, essayez de supprimer
         $sqlDelete = "DELETE FROM idees_bac_a_sable WHERE Id_Idee_bas = $delete_id";
 
         if ($conn->query($sqlDelete) === TRUE) {
@@ -44,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
 }
 ?>
 
+<!-- div d'ajout d'une idée au bac à sable -->
 <div class="idee-container">
     <h1>Ajouter une nouvelle idée au bac à sable</h1>
     <form method="POST">
@@ -64,12 +63,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
         <th>Actions</th>
     </tr>
     <?php
-    // Récupération des idées du bac à sable
+    // on récupère les idées du bac à sable
     $sql = "SELECT Id_Idee_bas, desc_Idee_bas, IdU, IdEq FROM idees_bac_a_sable";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-        // Affichage des idées
+        // affichage des idées
         while ($row = $result->fetch_assoc()) {
             echo "<tr>
                     <td>" . $row['Id_Idee_bas'] . "</td>
@@ -77,9 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                     <td>" . $row['IdU'] . "</td>
                     <td>" . $row['IdEq'] . "</td>
                     <td>";
-            // Vérifiez si l'idée appartient à l'utilisateur
             if ($row['IdU'] == $idU) {
-                // Bouton de suppression
+                // bouton de suppression
                 echo "<form method='POST' style='display:inline;'>
                         <input type='hidden' name='delete_id' value='" . $row['Id_Idee_bas'] . "'>
                         <input type='submit' value='Supprimer'>
@@ -95,5 +93,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
 </table>
 
 <?php
-$conn->close(); // Fermez la connexion à la base de données
+$conn->close();
 ?>
