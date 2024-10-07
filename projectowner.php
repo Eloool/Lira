@@ -1,13 +1,10 @@
-<!-- Conteneur pour tout le contenu -->
-
-    <!-- Formulaire de définition de projet -->
+    <!-- formulaire de définition de projet -->
     <form method="POST" class="formulaire-projet">
         <h3>Définition du projet</h3>
         <textarea name="defProj" rows="5" cols="50"></textarea><br>
         <input type="submit" value="Valider">
     </form>
 
-    <!-- PHP pour le traitement du formulaire -->
     <?php
         $idEq = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         $defProj = $_POST['defProj'] ?? null;
@@ -24,14 +21,13 @@
         }
     ?>
 
-    <!-- Formulaire de saisie des revues de sprint -->
+    <!-- formulaire de saisie des revues de sprint -->
     <form method="POST" class="formulaire-sprint">
         <h3>Saisie revues de sprint</h3>
         <textarea name="revSpr" rows="5" cols="50"></textarea><br>    
         <input type="submit" value="Valider">
     </form>
 
-    <!-- PHP pour la revue de sprint -->
     <?php
         $idSpr = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         $revSpr = $_POST['revSpr'] ?? null;
@@ -50,7 +46,7 @@
        include "creation_pb.php"; 
     ?>
 
-    <!-- Affichage des tâches -->
+    <!-- tableau d'affichage des tâches -->
     <table>
         <thead>
             <tr>
