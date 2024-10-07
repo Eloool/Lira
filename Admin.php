@@ -18,16 +18,16 @@ include 'header.php';
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 
-// Démarre la session pour vérifier si l'utilisateur est connecté
+// démarre la session pour vérifier si l'user est connecté
 session_start();
 if (!isset($_SESSION['token'])) {
-    $_SESSION['token'] = bin2hex(random_bytes(32)); // Générer un token sécurisé
+    $_SESSION['token'] = bin2hex(random_bytes(32)); // génère un token sécurisé
 }
 
 
 mysqli_report(MYSQLI_REPORT_OFF); 
 $mysqli = @new mysqli("localhost", "root", "", "lira");
-// vérifier la connexion connect_errno renvoie un numéro d'erreur , 0 si aucune erreur
+// vérifie la connexion (connect_errno renvoie un numéro d'erreur, 0 si pas d'erreur)
 if ( $mysqli->connect_errno ) {
         echo "Impossible de se connecter à MySQL: errNum=" . $mysqli->connect_errno .
     " errDesc=". $mysqli -> connect_error;
@@ -39,32 +39,27 @@ if ( $mysqli->connect_errno ) {
 function ajouterUtilisateur($nom, $prenom, $mot_de_passe, $specialite) {
     global $mysqli;
 
-    // Préparer la requête d'insertion
+    // requête d'insertion
     $stmt = $mysqli->prepare("INSERT INTO utilisateurs (NomU, PrenomU, MotDePasseU, SpecialiteU) VALUES (?, ?, ?, ?)");
-
-    // Vérifier si la préparation a réussi
     if ($stmt === false) {
         die("Erreur de préparation de la requête: " . $mysqli->error);
     }
 
-    // Hashage du mot de passe pour la sécurité
+    // on hashe le mdp pour plus de sécurité
     $mot_de_passe_hash = password_hash($mot_de_passe, PASSWORD_DEFAULT);
 
-    // Lier les paramètres (nom, prénom, mot de passe, spécialité)
+    // on lie les paramètres afin de pouvoir exécuter la requête
     $stmt->bind_param("ssss", $nom, $prenom, $mot_de_passe_hash, $specialite);
-
-    // Exécuter la requête
     if ($stmt->execute()) {
         echo "Utilisateur ajouté avec succès.<br>";
     } else {
         echo "Erreur lors de l'ajout de l'utilisateur: " . $stmt->error;
     }
 
-    // Fermer la déclaration
     $stmt->close();
 }
 
-// Si le formulaire est soumis, ajouter un nouvel utilisateur
+// ajout d'un nouvel utilisateur
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["nom"], $_POST["prenom"], $_POST["mot_de_passe"], $_POST["specialite"])) {
     $nom = $_POST["nom"];
     $prenom = $_POST["prenom"];
@@ -76,13 +71,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["nom"], $_POST["prenom"
 
 
 
-// Gestion de la mise à jour d'un utilisateur existant
+// mise à jour d'un utilisateur existant
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
     $ancien_nom = $_POST['ancien_nom'];
     $ancien_prenom = $_POST['ancien_prenom'];
     $nouveau_nom = $_POST['nouveau_nom'];
     $nouveau_prenom = $_POST['nouveau_prenom'];
-    $nouveau_password = password_hash($_POST['nouveau_password'], PASSWORD_DEFAULT); // Hachage du nouveau mot de passe
+    $nouveau_password = password_hash($_POST['nouveau_password'], PASSWORD_DEFAULT);
 
     $sql = "UPDATE utilisateurs SET NomU = ?, PrenomU = ?, MotDePAsseU = ? WHERE NomU = ? AND PrenomU = ?";
     $stmt = $conn->prepare($sql);
@@ -95,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
     }
 }
 
-// Si le formulaire est soumis, mettre à jour l'utilisateur
+// on met à jour l'utilisateur
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Nomeq"])) {
     $NomPrj = $_POST["Nomeq"];
 
@@ -108,13 +103,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Nomeq"])) {
 function ajouterEquipeEtAffecterRoles($NomEq, $IdScrumMaster) {
     global $mysqli;
 
-    // Vérifier si le Scrum Master existe
+    // on vérifie si le Scrum Master existe
     $stmtSM = $mysqli->prepare("SELECT IdU FROM utilisateurs WHERE IdU = ?");
     if ($stmtSM === false) {
         die("Erreur de préparation de la requête (Scrum Master): " . $mysqli->error);
     }
 
-    $stmtSM->bind_param("i", $IdScrumMaster); // Assumer que IdU est de type integer
+    $stmtSM->bind_param("i", $IdScrumMaster);
     if (!$stmtSM->execute()) {
         die("Erreur lors de l'exécution de la requête (Scrum Master): " . $stmtSM->error);
     }
@@ -123,11 +118,10 @@ function ajouterEquipeEtAffecterRoles($NomEq, $IdScrumMaster) {
 
     if ($resultSM->num_rows === 0) {
         echo "Erreur : Aucun Scrum Master trouvé.<br>";
-        return; // Sortir de la fonction si le Scrum Master n'existe pas
+        return;
     }
 
-    // Sélectionner le rôle par défaut (ex: 'SM')
-    $stmtRole = $mysqli->prepare("SELECT IdR FROM roles WHERE IdR = 'SM'"); // Modifie la condition selon tes besoins
+    $stmtRole = $mysqli->prepare("SELECT IdR FROM roles WHERE IdR = 'SM'");
     if ($stmtRole === false) {
         die("Erreur de préparation de la requête (Rôle): " . $mysqli->error);
     }
@@ -140,29 +134,26 @@ function ajouterEquipeEtAffecterRoles($NomEq, $IdScrumMaster) {
     
     if ($resultRole->num_rows === 0) {
         echo "Erreur : Aucun rôle trouvé.<br>";
-        return; // Sortir de la fonction si le rôle n'existe pas
+        return;
     }
 
     $rowRole = $resultRole->fetch_assoc();
     $IdRole = $rowRole['IdR'];
 
-    // Préparer la requête d'insertion pour l'équipe
+    // requête d'insertion de l'équipe
     $stmtEquipe = $mysqli->prepare("INSERT INTO equipesprj (NomEq) VALUES (?)");
     if ($stmtEquipe === false) {
         die("Erreur de préparation de la requête (Équipe): " . $mysqli->error);
     }
-
-    // Lier les paramètres
     $stmtEquipe->bind_param("s", $NomEq);
 
-    // Exécuter la requête
+    // on exécute la requête
     if ($stmtEquipe->execute()) {
         echo "Équipe ajoutée avec succès.<br>";
-        // Obtenir l'ID auto-incrémenté de la nouvelle équipe
         $idEquipe = $stmtEquipe->insert_id;
         echo "ID de l'équipe ajoutée : " . $idEquipe . "<br>";
 
-        // Associer le Scrum Master et son rôle à l'équipe
+        // requête pour lier le Scrum Master avec son rôle dans l'équipe
         $stmtAssociation = $mysqli->prepare("INSERT INTO rolesutilisateurprojet (IdU, IdR, IdEq) VALUES (?, ?, ?)");
         if ($stmtAssociation === false) {
             die("Erreur de préparation de la requête (Association): " . $mysqli->error);
@@ -180,28 +171,27 @@ function ajouterEquipeEtAffecterRoles($NomEq, $IdScrumMaster) {
         echo "Erreur lors de l'ajout de l'équipe: " . $stmtEquipe->error;
     }
 
-    // Fermer les déclarations
     $stmtEquipe->close();
     $stmtSM->close();
     $stmtRole->close();
 }
 
-// Gestion de la soumission du formulaire
+// soumission du formulaire avec système de tokens
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["NomEq"]) && isset($_POST["IdScrumMaster"]) && isset($_POST['token'])) {
-    if (hash_equals($_SESSION['token'], $_POST['token'])) { // Vérification du token CSRF
+    if (hash_equals($_SESSION['token'], $_POST['token'])) {
         $NomEq = $_POST["NomEq"];
         $IdScrumMaster = $_POST["IdScrumMaster"];
         ajouterEquipeEtAffecterRoles($NomEq, $IdScrumMaster);
         
-        // Redirection après le traitement du formulaire pour éviter soumission multiple
+        // on redirige pour éviter plusieurs soumissions
         header("Location: " . $_SERVER['PHP_SELF']);
-        exit; // Assurez-vous de terminer le script après redirection
+        exit;
     } else {
         echo "Erreur : Token CSRF invalide.";
     }
 }
 
-// Récupérer les utilisateurs pour le formulaire
+// requête pour récupérer les utilisateurs pour le formulaire
 $stmtUsers = $mysqli->prepare("SELECT IdU, CONCAT(NomU, ' ', PrenomU) AS FullName FROM utilisateurs");
 if ($stmtUsers === false) {
     die("Erreur de préparation de la requête (Utilisateurs): " . $mysqli->error);
@@ -220,7 +210,7 @@ $resultUsers = $stmtUsers->get_result();
         <p><b><u>Tableau de bord des activités</u></b></p>
     </div>
 
-    <!-- Formulaire pour ajouter un utilisateur -->
+    <!-- formulaire d'ajout d'un user -->
     <form action="" method="post">
             <h3>Ajouter un nouvel utilisateur</h3>
 
@@ -249,7 +239,7 @@ $resultUsers = $stmtUsers->get_result();
     </form>
     
 
-    <!-- Formulaire pour modifier un utilisateur -->
+    <!-- formulaire de modification d'un utilisateur -->
     <form action="" method="POST" >
     <h3>Mise à jour d'un utilisateur existant</h3>
     <label for="ancien_nom">Ancien nom:</label>
@@ -271,11 +261,10 @@ $resultUsers = $stmtUsers->get_result();
 </form>
     
 
-<!-- Formulaire pour ajouter une équipe -->
+<!-- formulaire d'ajout d'une équipe -->
 <form method="POST">
     <h3>Ajouter une équipe + ScrumMaster</h3>
     
-    <!-- Inclure le token CSRF dans le formulaire -->
     <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
     
     Nom de l'équipe : <input type="text" name="NomEq" required><br>
@@ -292,50 +281,48 @@ $resultUsers = $stmtUsers->get_result();
 
 
 <?php
-// Récupérer les équipes et les utilisateurs associés
+// on récupère les équipes et les utilisateurs associés
 $sql = "SELECT equipesprj.NomEq, utilisateurs.NomU, utilisateurs.PrenomU, roles.IdR 
         FROM equipesprj
         LEFT JOIN rolesutilisateurprojet ON equipesprj.IdEq = rolesutilisateurprojet.IdEq
         LEFT JOIN utilisateurs ON rolesutilisateurprojet.IdU = utilisateurs.IdU
         LEFT JOIN roles ON rolesutilisateurprojet.IdR = roles.IdR
-        ORDER BY equipesprj.NomEq, utilisateurs.NomU"; // Trier par équipe puis par utilisateur
+        ORDER BY equipesprj.NomEq, utilisateurs.NomU";
 
 $result = $mysqli->query($sql);
 if (!$result) {
     die("Erreur de requête : " . $mysqli->error);
 }
 
-// Tableau pour afficher les équipes et leurs utilisateurs
+// tableau pour afficher les équipes et leurs utilisateurs
 echo "<h3>Liste des équipes et utilisateurs associés</h3>";
 echo "<table border='1'>";
 echo "<tr><th>Équipe</th><th>Utilisateur</th><th>Rôle</th></tr>";
 
-// Variable pour stocker l'équipe actuelle et vérifier si elle a des utilisateurs
+// variables qui stockent l'équipe actuelle et vérifient si elle a des utilisateurs
 $currentTeam = null;
 $teamHasUser = false;
 
 while ($row = $result->fetch_assoc()) {
     $teamName = $row['NomEq'];
-    $userName = $row['NomU'] ? $row['NomU'] . ' ' . $row['PrenomU'] : null; // Null si pas d'utilisateur
-    $role = $row['IdR']; // À adapter pour afficher le rôle sous forme textuelle si nécessaire
+    $userName = $row['NomU'] ? $row['NomU'] . ' ' . $row['PrenomU'] : null;
+    $role = $row['IdR'];
     
     if ($teamName !== $currentTeam) {
-        // Afficher la nouvelle équipe
         echo "<tr><td><strong>$teamName</strong></td>";
         
         if ($userName) {
             echo "<td>$userName</td><td>$role</td></tr>";
-            $teamHasUser = true; // Marquer que cette équipe a un utilisateur
+            $teamHasUser = true;
         } else {
-            // Si pas d'utilisateur pour cette équipe
             echo "<td colspan='2'>Aucun utilisateur lié à cette équipe</td></tr>";
-            $teamHasUser = false; // Marquer qu'il n'y a pas d'utilisateur
+            $teamHasUser = false;
         }
         
-        // Mettre à jour l'équipe courante
+        // mise à jour de l'équipe actuelle
         $currentTeam = $teamName;
     } else {
-        // Afficher les utilisateurs supplémentaires de la même équipe
+        // affiche les autres utilisateurs de l'équipe
         if ($userName) {
             echo "<tr><td></td><td>$userName</td><td>$role</td></tr>";
             $teamHasUser = true;
@@ -343,17 +330,14 @@ while ($row = $result->fetch_assoc()) {
     }
 }
 
-// Si la dernière équipe n'avait pas d'utilisateurs
 if (!$teamHasUser) {
     echo "<tr><td></td><td colspan='2'>Aucun utilisateur lié à cette équipe</td></tr>";
 }
 
 echo "</table>";
 
-
 $mysqli->close(); 
 ?>
-
 
 
 </body> 
