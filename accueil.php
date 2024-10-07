@@ -1,20 +1,17 @@
 <?php
-session_start();  // Assure-toi que la session est bien démarrée
+session_start();
 require_once 'functions.php';
 
-// Récupération de l'utilisateur connecté
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-
-// Connexion à la base de données
 $conn = db_connect();
 
 if ($user_id) {
-    // Récupération des données de l'utilisateur
-    $all_projects = get_all_projects($conn); // Tous les projets
-    $user_projects = get_user_projects($conn, $user_id); // Projets de l'utilisateur connecté
-    $user_tasks = get_user_tasks($conn, $user_id); // Tâches de l'utilisateur connecté
+    // on récupère les données de l'utilisateur
+    $all_projects = get_all_projects($conn); // tous les projets
+    $user_projects = get_user_projects($conn, $user_id); // projets que de l'utilisateur connecté
+    $user_tasks = get_user_tasks($conn, $user_id); // tâches de l'utilisateur connecté
 } else {
-    // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
+    // si utilisateur pas connecté
     header("Location: connexion.php");
     exit();
 }
@@ -29,7 +26,8 @@ if ($user_id) {
     <?php include "header.php"; ?>
     <h1>Tableau de bord</h1>
 
-    <div class="admin"> <!-- Conteneur pour tous les projets -->
+    <!-- div de tous les projets -->
+    <div class="admin">
         <h2>Tous les projets</h2>
         <table>
             <thead>
@@ -50,7 +48,8 @@ if ($user_id) {
     </div>
 
     <?php if ($user_id) : ?>
-        <div class="admin"> <!-- Conteneur pour le tableau personnel -->
+        <!-- div du tableau de bord personnel -->
+        <div class="admin">
             <h2>Votre tableau de bord personnel</h2>
             <table>
                 <thead>
