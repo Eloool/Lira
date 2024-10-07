@@ -1,4 +1,3 @@
-/* Global reset */
 * {
     margin: 0;
     padding: 0;
@@ -7,17 +6,17 @@
 
 .main {
     font-family: Arial, sans-serif;
-    background-color: #0055A4; /* Bleu français */
+    background-color: #0055A4;
     color: white;
     
 }
 .admin{
     display: flex;
-    justify-content: flex-start; /* Aligne le contenu en haut de la page */
+    justify-content: flex-start;
     align-items: center;
-    min-height: 100vh; /* Laisse le contenu s'étendre si nécessaire */
+    min-height: 100vh;
     flex-direction: column;
-    padding-top: 50px; /* Ajoute de l'espace en haut pour éviter que le contenu ne soit coupé */
+    padding-top: 50px;
 }
 
 h2 {
@@ -28,12 +27,12 @@ h2 {
 
 form {
     background-color: #FFF;
-    color: #0055A4; /* Bleu français pour le texte */
+    color: #0055A4;
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     width: 350px;
-    margin-bottom: 30px; /* Pour espacer les formulaires */
+    margin-bottom: 30px;
     text-align: center;
 }
 
@@ -51,7 +50,7 @@ select {
     margin: 10px 0;
     border: 1px solid #0055A4;
     border-radius: 5px;
-    color: #0055A4; /* Texte bleu français */
+    color: #0055A4;
 }
 
 input[type="submit"] {
@@ -66,17 +65,15 @@ input[type="submit"] {
 }
 
 input[type="submit"]:hover {
-    background-color: #FFCC00; /* Jaune doré au survol */
+    background-color: #FFCC00;
 }
 
-/* Responsiveness */
 @media (max-width: 400px) {
     form {
         width: 90%;
     }
 }
 
-/* Message styling */
 p {
     color: white;
     font-weight: bold;
@@ -94,7 +91,7 @@ header {
     border-bottom: 1px solid #ddd;
 }
 .logo {
-    width: 50px; /* Adjust size as needed */
+    width: 50px;
     height: 50px;
 }
 .title {
