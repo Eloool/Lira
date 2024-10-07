@@ -28,6 +28,27 @@ if ($project_id <= 0) {
     exit();
 }
 
+$sql = "SELECT NomEq
+            FROM equipesprj
+            WHERE IdEq = ?";
+    $nomproj="";
+
+     if ($stmt = $conn->prepare($sql)) {
+        // Liaison du paramètre (le ? correspond à $user_id)
+        $stmt->bind_param('i',$project_id);
+
+        // Exécution de la requête
+        $stmt->execute();
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+
+        // Récupération des enregistrements sous forme de tableau associatif
+         $nomproj= $result->fetch_all(MYSQLI_ASSOC)[0]['NomEq'];
+    } else {
+        // Gestion de l'erreur si la requête échoue
+        die("Erreur dans la requête : " . $conn->error);
+    }
 // Récupérer les tâches pour l'utilisateur et le projet spécifiés
 $tachesuser = get_tasks_for_user_by_project($conn,$ID_user, $project_id);
 $taches = get_tasks_by_project($conn, $project_id);
@@ -59,27 +80,7 @@ if (isset($_POST['Changer'])) {
 <body>
 <?php
     include "header.php" ;
-    $sql = "SELECT NomEq
-            FROM equipesprj
-            WHERE IdEq = ?";
-    $nomproj="";
-
-     if ($stmt = $conn->prepare($sql)) {
-        // Liaison du paramètre (le ? correspond à $user_id)
-        $stmt->bind_param('i',$project_id);
-
-        // Exécution de la requête
-        $stmt->execute();
-
-        // Récupération des résultats
-        $result = $stmt->get_result();
-
-        // Récupération des enregistrements sous forme de tableau associatif
-         $nomproj= $result->fetch_all(MYSQLI_ASSOC)[0]['NomEq'];
-    } else {
-        // Gestion de l'erreur si la requête échoue
-        die("Erreur dans la requête : " . $conn->error);
-    }
+    
     echo "<br>";
     ?>
     <div class="admin">
