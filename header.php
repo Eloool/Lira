@@ -1,41 +1,38 @@
 <?php
+
+// fonction de suppression de cookie
 function Suppr_cookie(){
 
     session_start();
     require_once 'functions.php';
     $conn = db_connect();
     $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-    // Suppression du cookie de username
+    // suppression du cookie d'username
     if($user_id){
-        
-        
+        // appel de notre procedure
         $sql = "CALL Change_State_User(?);";
-
-        // Préparation de la requête
         $stmt = $conn->prepare($sql);
-
-        // Liaison du paramètre (le ? correspond à $user_id)
         $stmt->bind_param('i', $_SESSION['user_id']);
-
-        // Exécution de la requête
         $stmt->execute();
         $_SESSION = [];
         header("Location: connexion.php");
         exit();
     } 
 }
-//Si appui sur le button déconnextion alors lance la fonction Suppr_cookie
+
+// si appui sur le button déconnexion alors lance la fonction Suppr_cookie
 if (isset($_GET['push_deconnextion'])) {
     Suppr_cookie();
 }
 ?>
+
 
 <header>
     <link rel="stylesheet" href="style.css">
     <div class="logo">
         <img src="logo.png" alt="Logo" class="logo">
     </div>
-    <nav> <!-- Utilisation de <nav> pour la navigation -->
+    <nav>
         <a href="accueil.php">
             <button class="button">Accueil</button>
         </a>
