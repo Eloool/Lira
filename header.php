@@ -9,11 +9,6 @@ function Suppr_cookie(){
     $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
     // suppression du cookie d'username
     if($user_id){
-        // appel de notre procedure
-        $sql = "CALL Change_State_User(?);";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param('i', $_SESSION['user_id']);
-        $stmt->execute();
         $_SESSION = [];
         header("Location: connexion.php");
         exit();
