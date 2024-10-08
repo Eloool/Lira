@@ -53,6 +53,29 @@ if (isset($_POST['Changer'])) {
     $stmt->bind_param('ii', $etatID, $tacheID);
     $stmt->execute();
 }
+
+if(array_key_exists('beginPP', $_POST)) {
+    set_planning_poker($conn,$project_id,1);
+    header("Location: ppvote.PHP?id=$project_id");
+}
+
+function set_planning_poker($conn,$project_id,$value){
+    $sql = "UPDATE equipesprj
+        SET equipesprj.PP = ?
+        WHERE equipesprj.IdEq = ?";
+
+    // Préparation de la requête
+    if ($stmt = $conn->prepare($sql)) {
+        // Liaison du paramètre (le ? correspond à $user_id)
+        $stmt->bind_param('ii', $value, $project_id);
+
+        // Exécution de la requête
+        $stmt->execute();
+    } else {
+        // Gestion de l'erreur si la requête échoue
+        die("Erreur dans la requête : " . $conn->error);
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -106,9 +129,19 @@ if (isset($_POST['Changer'])) {
         </table>
 
         <div class="planning-poker">
-            <a class="button" href="ppvote.php?id=<?= $project_id ?>">
-                <?= $Roleuser === 'SM' ? "Lancer Planning Poker" : "Participer au Planning Poker" ?>
-            </a>
+            <?php
+            
+                if($Roleuser === 'SM') {
+                    
+                    echo "<form method=\"post\">
+                            <input type=\"submit\" name=\"beginPP\"
+                            class=\"button\" value=\"Lancer Planning Poker\">
+                        </form>";
+                }
+                else {
+                    echo "<a class=\"button\" href=\"ppvote.php?id=$project_id\">Participer au Planning Poker</a>";
+                }
+            ?>
         </div>
 
         <?php if ($Roleuser === 'PO') {

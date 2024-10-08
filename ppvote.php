@@ -134,7 +134,7 @@ function get_pp_participants($conn, $project_id){
     }
 }
 
-function is_timer_voting($conn,$project_id){
+function is_actually_voting($conn,$project_id){
     $sql = "SELECT votingTask
             FROM equipesprj
             WHERE IdEq = ?";
@@ -176,16 +176,16 @@ function set_pp_participant($conn, $project_id, $user_id, $value){
     }
 }
 
-function begin_vote($conn, $project_id) {
+function set_vote_state($conn, $value, $project_id) {
     //Changer le booléen dans equipesprj "votingTask" à 1(true)
     $sql = "UPDATE equipesprj
-        SET votingTask = 1
+        SET votingTask = ?
         WHERE IdEq = ?";
 
     // Préparation de la requête
     if ($stmt = $conn->prepare($sql)) {
         // Liaison du paramètre (le ? correspond à $user_id)
-        $stmt->bind_param('i', $project_id);
+        $stmt->bind_param('ii', $value, $project_id);
 
         // Exécution de la requête
         $stmt->execute();
@@ -238,19 +238,25 @@ $RoleUser = get_roles_for_user_for_project($conn,$ID_user,$project_id)[0]['IdR']
 
     //S'il quitte sur le bouton pour quitter le PP, on le déconnecte du PP et redirige vers sa page projet
     if(array_key_exists('leavePP', $_POST)) {
+        set_vote_state($conn, 0, $project_id);
         set_pp_participant($conn, $project_id, $ID_user, 0);
         header("Location: projet.PHP?id=$project_id");
         exit;
     }
     if(array_key_exists('beginBtn', $_POST)) {
-        begin_vote($conn, $project_id);
-        header("Location: ppvote1.PHP?id=$project_id");
+        set_vote_state($conn, 1, $project_id);
+        header("Location: ppvote.PHP?id=$project_id");
+    }
+    if(array_key_exists('stopBtn', $_POST)) {
+        //[TODO] : Afficher les résultats des votes et la possibilité du vote final, et de passer à la prochaine tache (techniquement, juste lui assigner son coût et actualiser)
+        set_vote_state($conn, 0, $project_id);
+        header("Location: ppvote.PHP?id=$project_id");
     }
     ?>
     <br>
     <form method="post">
         <input type="submit" name="leavePP"
-        class="button" value="Quitter le PP">
+        class="button" <?php if($RoleUser === 'SM') echo"value=\"Arrêter le PP\""; else echo"value=\"Quitter le PP\"";?>>
     </form>
     <br>
     <?php
@@ -289,7 +295,7 @@ $RoleUser = get_roles_for_user_for_project($conn,$ID_user,$project_id)[0]['IdR']
         <br>
         <?php
         
-        if(is_timer_voting($conn, $project_id)[0]['votingTask'] == 1){
+        if(is_actually_voting($conn, $project_id)[0]['votingTask'] == 1){
 
             //Avoir un bouton pour commencer le vote timé
             ?>
@@ -313,7 +319,16 @@ $RoleUser = get_roles_for_user_for_project($conn,$ID_user,$project_id)[0]['IdR']
             </form>
             <br>
             
+            <?php if($RoleUser === 'SM'){
+                //Avoir un bouton pour stopper le vote
+            ?>
+            <form method="post">
+                <input type="submit" name="stopBtn"
+                class="button" value="Arrêter le vote">
+            </form><br>
+            
             <?php
+            }
         }
         else {
             if($RoleUser === 'SM'){
@@ -336,7 +351,9 @@ $RoleUser = get_roles_for_user_for_project($conn,$ID_user,$project_id)[0]['IdR']
             $participants = get_pp_participants($conn, $project_id);
             foreach ($participants as $participant) : ?>
                 <tr>
-                    <td><?= "· ", htmlspecialchars($participant['NomU']), " ",htmlspecialchars($participant['PrenomU'])?></td>
+                    <td><?= "· ", htmlspecialchars($participant['NomU']), " ",htmlspecialchars($participant['PrenomU'])?>
+                    <?php if(htmlspecialchars($participant['IdU']) == $ID_user) echo " (vous)"; ?>
+                    </td>
                 </tr>
             <?php endforeach;
         }
