@@ -326,7 +326,7 @@ INSERT INTO `taches` (`IdT`, `TitreT`, `UserStoryT`, `IdEq`, `IdCout`, `IdPriori
 (9, 'Mettre en place le système de notifications', 'En tant qu\'utilisateur, je veux recevoir des alertes en temps réel', 8, 6, 1),
 (10, 'Refactoriser le code legacy', 'En tant que développeur, je veux simplifier l\'ancien code', 10, 7, 2),
 (11, 'Configurer le serveur de production', 'En tant que SysAdmin, je veux préparer l\'environnement de production', 11, 4, 3),
-(12, 'Rédiger la documentation utilisateur', 'En tant que rédacteur, je veux que l\'utilisateur ait des guides clairs', 12, 3, 4);
+(12, 'Rédiger la documentation utilisateur', 'En tant que rédacteur, je veux que l\'utilisateur ait des guides clairs', 12, 3, 4),
 (20, 'Nouvelle tâche', 'Le user story', 6, 5, 4);
 
 -- --------------------------------------------------------
