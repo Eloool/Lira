@@ -31,14 +31,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // on vérifie si le mot de passe est correct
         if (password_verify($password, $row['MotDePasseU'])) {
-            // appel à notre procedure
-            $sql = "CALL Change_State_User(?);";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param('i', $row['IdU']);
-            $stmt->execute();
 
             // on vérifie si l'utilisateur n'est pas déjà connecté
-            if($row['is_connected'] == 0){
                 // on stocke donc l'ID utilisateur dans la session
                 $_SESSION['user_id'] = $row['IdU'];
 
@@ -53,11 +47,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     header("refresh:3;url=accueil.php");  // non : redirection vers la page d'accueil
                 }
                 exit();
-
-            }
-            else {
-                echo "Utilisateur déjà connecté";
-            }
             
         } else {
             echo "Mot de passe incorrect.";

@@ -575,36 +575,6 @@ DELIMITER ;
 
 
 
--- procedure qui change l'etat de connection de l'utilisateur en parametre
-
-DROP PROCEDURE IF EXISTS  Change_State_User  ;
-
-DELIMITER //
-CREATE PROCEDURE Change_State_User
-(IN Id_User INT) 
-BEGIN
-    DECLARE connect INT;
-    DECLARE new_state INT;
-    SET connect = (SELECT is_connected
-		   FROM utilisateurs
-		   WHERE IdU=Id_User);
-IF (connect=0) THEN
-    SET new_state=1;
-ELSE 
-    SET new_state=0;
-END IF ;
-
-UPDATE utilisateurs
-    SET is_connected=new_state
-    WHERE IdU = Id_User;
-
-
-END //
-DELIMITER ;
-
-
-
-
 
 
 
