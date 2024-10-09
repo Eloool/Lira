@@ -5,7 +5,7 @@ function db_connect() {
     $servername = "localhost";
     $username = "root";
     $password = "";
-    $dbname = "lira";
+    $dbname = "agiletools";
 
     // création de la connexion avec mysqli
     $conn = new mysqli($servername, $username, $password, $dbname);
