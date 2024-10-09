@@ -25,24 +25,6 @@ DELIMITER $$
 --
 -- Procédures
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `Change_State_User` (IN `Id_User` INT)   BEGIN
-    DECLARE connect INT;
-    DECLARE new_state INT;
-    SET connect = (SELECT is_connected
-		   FROM utilisateurs
-		   WHERE IdU=Id_User);
-IF (connect=0) THEN
-    SET new_state=1;
-ELSE 
-    SET new_state=0;
-END IF ;
-
-UPDATE utilisateurs
-    SET is_connected=new_state
-    WHERE IdU = Id_User;
-
-
-END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `Velo_Total_Sprint` (IN `Id_Sprint` INT)   BEGIN
 SELECT SUM(IdCout)
@@ -346,8 +328,7 @@ CREATE TABLE `utilisateurs` (
   `PrenomU` varchar(50) NOT NULL,
   `MotDePasseU` varchar(255) NOT NULL,
   `SpecialiteU` enum('Développeur','Modeleur','Animateur','UI','IA','WebComm','Polyvalent') NOT NULL DEFAULT 'Polyvalent',
-  `is_admin` tinyint(1) DEFAULT 0,
-  `is_connected` tinyint(1) DEFAULT 0
+  `is_admin` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -355,14 +336,14 @@ CREATE TABLE `utilisateurs` (
 --
 
 INSERT INTO `utilisateurs` (`IdU`, `NomU`, `PrenomU`, `MotDePasseU`, `SpecialiteU`, `is_admin`, `is_connected`) VALUES
-(1, 'admin', 'admin', '$2b$12$rXsIUK8GzjYNl7aSxYrz8.eyAINBNjXz2mHNyVWsWzEYAbcBh6Z0q', 'Polyvalent', 1, 0),
-(2, 'Dupont', 'Jean', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Développeur', 0, 0),
-(3, 'Martin', 'Paul', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Modeleur', 0, 0),
-(4, 'Durand', 'Marie', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'UI', 0, 0),
-(5, 'Petit', 'Luc', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Développeur', 0, 0),
-(6, 'Moreau', 'Chloé', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Polyvalent', 0, 0),
-(7, 'Bernard', 'Sophie', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Animateur', 0, 0),
-(8, 'Loiseau', 'Olivier', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Développeur', 0, 0);
+(1, 'admin', 'admin', '$2b$12$rXsIUK8GzjYNl7aSxYrz8.eyAINBNjXz2mHNyVWsWzEYAbcBh6Z0q', 'Polyvalent', 1),
+(2, 'Dupont', 'Jean', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Développeur', 0),
+(3, 'Martin', 'Paul', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Modeleur', 0),
+(4, 'Durand', 'Marie', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'UI', 0),
+(5, 'Petit', 'Luc', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Développeur', 0),
+(6, 'Moreau', 'Chloé', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Polyvalent', 0),
+(7, 'Bernard', 'Sophie', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Animateur', 0),
+(8, 'Loiseau', 'Olivier', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Développeur', 0);
 
 --
 -- Déclencheurs `utilisateurs`
@@ -392,6 +373,7 @@ DELIMITER ;
 --
 
 CREATE TABLE `voterpp` (
+  `IdEq` smallint(6) NOT NULL,
   `IdU` smallint(6) NOT NULL,
   `IdT` int(11) NOT NULL,
   `IdCout` smallint(6) NOT NULL DEFAULT 1
@@ -482,7 +464,8 @@ ALTER TABLE `utilisateurs`
 -- Index pour la table `voterpp`
 --
 ALTER TABLE `voterpp`
-  ADD PRIMARY KEY (`IdU`,`IdT`),
+  ADD PRIMARY KEY (`IdEq`,`IdU`,`IdT`),
+  ADD KEY `IdEq` (`IdEq`),
   ADD KEY `IdU` (`IdU`),
   ADD KEY `IdT` (`IdT`),
   ADD KEY `IndexCout` (`IdCout`);
@@ -575,7 +558,8 @@ ALTER TABLE `taches`
 ALTER TABLE `voterpp`
   ADD CONSTRAINT `FK_VoterPP_Cout` FOREIGN KEY (`IdCout`) REFERENCES `coutstaches` (`IdCout`),
   ADD CONSTRAINT `FK_VoterPP_Taches` FOREIGN KEY (`IdT`) REFERENCES `taches` (`IdT`),
-  ADD CONSTRAINT `FK_VoterPP_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`);
+  ADD CONSTRAINT `FK_VoterPP_Utilisateurs` FOREIGN KEY (`IdU`) REFERENCES `utilisateurs` (`IdU`),
+  ADD CONSTRAINT `FK_VoterPP_Projets` FOREIGN KEY (`IdEq`) REFERENCES `equipesprj` (`IdEq`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
