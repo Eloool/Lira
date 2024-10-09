@@ -53,13 +53,84 @@
         include "Include/Ajout_MF.php";
         ?>
 
-        <h2>Ajouter une Tâche et Assigner un Utilisateur</h2>
+        <?php
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['task_id']) && isset($_POST['user_id'])) {
+                $task_id = (int)$_POST['task_id'];
+                $user_id = (int)$_POST['user_id'];
+                $idEq = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+                $idP = 1;
+                
+                $sql_insert = "INSERT INTO sprintbacklog (IdT, IdS, IdU, IdEtat) VALUES (?, ?, ?, ?)";
+                $sql_delete = "DELETE FROM taches WHERE IdT = $task_id";
+
+                // ajout dans SB
+                if ($stmt_insert = $conn->prepare($sql_insert)) {
+                    $stmt_insert->bind_param('iiii', $task_id, $idEq, $user_id, $idP);
+                    if ($stmt_insert->execute()) {
+                        $message = "Tâche ajoutée et assignée à l'utilisateur avec succès !";
+                    } else {
+                        $message = "Erreur lors de l'ajout de la tâche : " . $stmt_insert->error;
+                    }
+                } else {
+                    $message = "Erreur dans la requête d'insertion : " . $conn->error;
+                }
+                
+                // // suppression dans PB
+                // if ($stmt_delete = $conn->prepare($sql_delete)) {
+                //     if ($stmt_delete->execute()) {
+                //         $message = "Tâche supprimée de la table taches";
+                //     } else {
+                //         $message = "Erreur lors de la suppression dans la table taches : " . $stmt_delete->error;
+                //     }
+                // } else {
+                //     $message = "Erreur de suppression dans la table taches : " . $conn->error;
+                // }
+            } else {
+                $message = "Aucune tâche ou utilisateur sélectionné.";
+            }
+        }
+
+        // on récupère les tâches dans sprintbacklog qui ne sont pas dans taches
+        $sql = "SELECT * 
+                FROM sprintbacklog
+                RIGHT JOIN taches ON sprintbacklog.IdT = taches.IdT
+                WHERE sprintbacklog.IdT IS NULL AND taches.IdEq = ?";
+
+        if ($stmt = $conn->prepare($sql)) {
+            $project_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+            $stmt->bind_param('i', $project_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $data = $result->fetch_all(MYSQLI_ASSOC);
+        } else {
+            die("Erreur dans la requête : " . $conn->error);
+        }
+
+        // on recupere les utilisateurs du projet
+        $sql_users = "SELECT * FROM rolesutilisateurprojet
+                        NATURAL JOIN utilisateurs
+                        WHERE rolesutilisateurprojet.IdEq = ?";
+        $users = [];
+        if ($stmt_users = $conn->prepare($sql_users)) {
+            $stmt_users->bind_param('i', $project_id);
+            $stmt_users->execute();
+            $result_users = $stmt_users->get_result();
+            $users = $result_users->fetch_all(MYSQLI_ASSOC); 
+        } else {
+            die("Erreur dans la requête des utilisateurs : " . $conn->error);
+        }
+        ?>
+
+        <h2>Ajouter une tâche et assigner un utilisateur</h2>
+
         <?php if (isset($message)) : ?>
-            <p class="message"><?= htmlspecialchars($message) ?></p> 
+            <p><?= htmlspecialchars($message) ?></p> 
         <?php endif; ?>
 
-        <form method="POST" action="" class="form">
-            <table class="styled-table">
+        <form method="POST" action="">
+            <table border="1">
                 <thead>
                     <tr>
                         <th>Sélection</th>
@@ -94,8 +165,7 @@
                 <?php endforeach; ?>
             </select>
 
-            <!-- <button type="submit" class="button">Ajouter la tâche et l'assigner</button> -->
-            <input type="submit" value="Ajouter la tâche et l'assigner">
+            <button type="submit">Ajouter la tâche et l'assigner</button>
         </form>
     </div>
 </body>
