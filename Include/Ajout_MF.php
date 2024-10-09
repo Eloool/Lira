@@ -12,9 +12,9 @@ if (isset($_POST['ajouter'])) {
     $stmt = $conn->prepare($insertRoleQuery);
     $stmt->bind_param('isi', $userId, $role, $projetId);
     $stmt->execute();
+    $idproj = strval($projetId);
 
-    echo "<p>L'utilisateur a été ajouté avec succès au projet!</p>";
-    header("Location: ../projet.php");
+    header("Location: ../projet.php?id=".$idproj);
 }
 ?>
 

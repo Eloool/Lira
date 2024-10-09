@@ -153,6 +153,26 @@ function get_etat_of_task($conn,$tache_id){
         die("Erreur dans la requête : " . $conn->error);
     }
 }
+function is_user_in_project($conn,$user_id,$project_id){
+    $sql = "SELECT COUNT(IdU)
+            FROM rolesutilisateurprojet
+            WHERE IdEq = ? AND IdU = ?";
+
+    if ($stmt = $conn->prepare($sql)) {
+        $stmt->bind_param('ii',$project_id,$user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $userin=$result->fetch_all(MYSQLI_ASSOC)[0]['COUNT(IdU)'];
+        if($userin>0){
+            return true ;
+    }
+    else{
+        return false;
+    }
+    } else {
+        die("Erreur dans la requête : " . $conn->error);
+    }
+}
 
 // fin des fonctions
 ?>
