@@ -221,7 +221,8 @@ INSERT INTO `rolesutilisateurprojet` (`IdU`, `IdR`, `IdEq`, `inPP`) VALUES
 (4, 'RefUi', 1, 0),
 (5, 'SM', 1, 0),
 (6, 'PO', 2, 0),
-(7, 'R_Anim', 2, 0);
+(7, 'R_Anim', 2, 0),
+(8, 'SM', 2, 0);
 
 -- --------------------------------------------------------
 
@@ -360,7 +361,8 @@ INSERT INTO `utilisateurs` (`IdU`, `NomU`, `PrenomU`, `MotDePasseU`, `Specialite
 (4, 'Durand', 'Marie', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'UI', 0, 0),
 (5, 'Petit', 'Luc', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Développeur', 0, 0),
 (6, 'Moreau', 'Chloé', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Polyvalent', 0, 0),
-(7, 'Bernard', 'Sophie', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Animateur', 0, 0);
+(7, 'Bernard', 'Sophie', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Animateur', 0, 0),
+(8, 'Loiseau', 'Olivier', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Développeur', 0, 0);
 
 --
 -- Déclencheurs `utilisateurs`
