@@ -525,7 +525,7 @@ ALTER TABLE `taches`
 -- AUTO_INCREMENT pour la table `utilisateurs`
 --
 ALTER TABLE `utilisateurs`
-  MODIFY `IdU` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `IdU` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Contraintes pour les tables déchargées
