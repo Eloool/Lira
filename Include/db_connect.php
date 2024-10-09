@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "lira";
+$dbname = "agiletools";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
