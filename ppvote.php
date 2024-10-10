@@ -222,147 +222,148 @@ $RoleUser = get_roles_for_user_for_project($conn,$ID_user,$project_id)[0]['IdR']
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>Planning Poker</title>
 </head>
+
 <body>
-    <?php
-    include "header.php" ;
+    <div id="header">
+        <?php include "header.php"; ?>
+    </div>
 
-    $tasks = get_tasks_list($conn, $project_id);
-    //On connecte l'utilisateur aux participants du PP, même si aucune n'es en cours
-    set_pp_participant($conn, $project_id, $ID_user, 1);
-
-    //S'il quitte sur le bouton pour quitter le PP, on le déconnecte du PP et redirige vers sa page projet
-    if(array_key_exists('leavePP', $_POST)) {
-        set_vote_state($conn, 0, $project_id);
-        set_pp_participant($conn, $project_id, $ID_user, 0);
-        header("Location: projet.PHP?id=$project_id");
-        exit;
-    }
-    if(array_key_exists('beginBtn', $_POST)) {
-        set_vote_state($conn, 1, $project_id);
-        header("Location: ppvote.PHP?id=$project_id");
-    }
-    if(array_key_exists('stopBtn', $_POST)) {
-        //[TODO] : Afficher les résultats des votes et la possibilité du vote final, et de passer à la prochaine tache (techniquement, juste lui assigner son coût et actualiser)
-        set_vote_state($conn, 0, $project_id);
-        header("Location: ppvote.PHP?id=$project_id");
-    }
-    ?>
-    <br>
-    <form method="post">
-        <input type="submit" name="leavePP"
-        class="button" <?php if($RoleUser === 'SM') echo"value=\"Arrêter le PP\""; else echo"value=\"Quitter le PP\"";?>>
-    </form>
-    <br>
-    <?php
-    //Vérifier si un planning poker est en cours
-    if(is_planning_poker($conn, $project_id)[0]['PP'] == 1 && count($tasks) > 0){
-        //Si oui, on affiche la premiere tache à pouvoir être évaluer
-        $taskToEval = $tasks[0];
-        //Et on passe son booléen VotePP à 1(true)
-        set_task_to_eval($conn,$taskToEval['IdT'],1);
-
-        if(array_key_exists('voteBtn', $_POST)) {
-            //Insertion du vote dans la base
-            $sql = "INSERT INTO voterpp VALUES (?, ?, ?)";
-    
-            // Préparation de la requête
-            if ($stmt = $conn->prepare($sql)) {
-            // Liaison du paramètre (le ? correspond à $user_id)
-            $stmt->bind_param('iii', $ID_user, $taskToEval['IdT'], $_POST['choix']);
-    
-            // Exécution de la requête
-            $stmt->execute();
-            } else {
-            // Gestion de l'erreur si la requête échoue
-            die("Erreur dans la requête : " . $conn->error);
-            }
-            header("Location: recapvote.php");
-        }
-        
-        ?>
-        <div>
-            Titre : <?=$taskToEval['TitreT']?>
-        </div>
-        <div>
-            Description : <?=$taskToEval['UserStoryT']?>
-        </div>
-        <br>
+    <div class="container">
         <?php
-        
-        if(is_actually_voting($conn, $project_id)[0]['votingTask'] == 1){
+        $tasks = get_tasks_list($conn, $project_id);
+        set_pp_participant($conn, $project_id, $ID_user, 1);
 
-            //Avoir un bouton pour commencer le vote timé
-            ?>
-            <form method="post">
-                <label for="choix">Sélectionnez votre vote :</label>
-                 <?php 
-                    echo "<select id=\"choix\" name=\"choix\" required>
-                    <option value=\"\">--Choisissez une estimation--</option>
-                    ";
+        if (array_key_exists('leavePP', $_POST)) {
+            set_vote_state($conn, 0, $project_id);
+            set_pp_participant($conn, $project_id, $ID_user, 0);
+            header("Location: projet.PHP?id=$project_id");
+            exit;
+        }
 
-                    //Proposer les estimations possibles
-                    $estimations = get_task_estimations($conn);
-                    foreach ($estimations as $estimation) : ?>
-                        <option value=<?= htmlspecialchars($estimation['IdCout'])?>><?= htmlspecialchars($estimation['ValCout'])?></option>
-                    <?php endforeach;
-                 ?>
-                </select>
-                <br>
-                <input type="submit" name="voteBtn"
-                class="button" value="Soumettre le vote">
-            </form>
+        if (array_key_exists('beginBtn', $_POST)) {
+            set_vote_state($conn, 1, $project_id);
+            header("Location: ppvote.PHP?id=$project_id");
+        }
+
+        if (array_key_exists('stopBtn', $_POST)) {
+            set_vote_state($conn, 0, $project_id);
+            header("Location: ppvote.PHP?id=$project_id");
+        }
+        ?>
+
+        <form method="post">
+            <input type="submit" name="leavePP" class="button-blue"
+                <?php if($RoleUser === 'SM') echo 'value="Arrêter le PP"'; else echo 'value="Quitter le PP"'; ?> />
+        </form>
+
+        <br>
+
+        <?php
+        if (is_planning_poker($conn, $project_id)[0]['PP'] == 1 && count($tasks) > 0) {
+            $taskToEval = $tasks[0];
+            set_task_to_eval($conn, $taskToEval['IdT'], 1);
+
+            if (array_key_exists('voteBtn', $_POST)) {
+                $sql = "INSERT INTO voterpp VALUES (?, ?, ?)";
+
+                if ($stmt = $conn->prepare($sql)) {
+                    $stmt->bind_param('iii', $ID_user, $taskToEval['IdT'], $_POST['choix']);
+                    $stmt->execute();
+                } else {
+                    die("Erreur dans la requête : " . $conn->error);
+                }
+                header("Location: recapvote.php");
+            }
+        ?>
+
+        <!-- Tableau avec le titre, la description et les participants -->
+        <div class="table-container">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Description</th>
+                        <th>Participants</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><?= htmlspecialchars($taskToEval['TitreT']) ?></td>
+                        <td><?= htmlspecialchars($taskToEval['UserStoryT']) ?></td>
+                        <td>
+                            <ul>
+                                <?php
+                                $participants = get_pp_participants($conn, $project_id);
+                                foreach ($participants as $participant) :
+                                ?>
+                                <li>
+                                    <?= htmlspecialchars($participant['NomU']) . ' ' . htmlspecialchars($participant['PrenomU']) ?>
+                                    <?php if (htmlspecialchars($participant['IdU']) == $ID_user) echo " (vous)"; ?>
+                                </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+
+        <?php if (is_actually_voting($conn, $project_id)[0]['votingTask'] == 1) { ?>
+        <form method="post" class="form-box">
+            <label for="choix">Sélectionnez votre vote :</label>
+            <select id="choix" name="choix" required>
+                <option value="">--Choisissez une estimation--</option>
+                <?php
+                $estimations = get_task_estimations($conn);
+                foreach ($estimations as $estimation) :
+                ?>
+                <option value=<?= htmlspecialchars($estimation['IdCout']) ?>>
+                    <?= htmlspecialchars($estimation['ValCout']) ?>
+                </option>
+                <?php endforeach; ?>
+            </select>
+
             <br>
-            
-            <?php if($RoleUser === 'SM'){
-                //Avoir un bouton pour stopper le vote
-            ?>
-            <form method="post">
-                <input type="submit" name="stopBtn"
-                class="button" value="Arrêter le vote">
-            </form><br>
-            
-            <?php
-            }
-        }
-        else {
-            if($RoleUser === 'SM'){
-                //Avoir un bouton pour commencer le vote
-            ?>
-            <form method="post">
-                <input type="submit" name="beginBtn"
-                class="button" value="Commencer le vote">
-            </form><br>
-            
-            <?php
-            }
-            
-        }
+            <input type="submit" name="voteBtn" class="button-blue" value="Soumettre le vote">
+        </form>
+        <br>
 
-        //Vérifier si l'utilisateur est SM ou lambda
-        if($RoleUser === 'SM'){
-            //Afficher les participants
-            echo "<div> Participants : </div><br>";
-            $participants = get_pp_participants($conn, $project_id);
-            foreach ($participants as $participant) : ?>
-                <tr>
-                    <td><?= "· ", htmlspecialchars($participant['NomU']), " ",htmlspecialchars($participant['PrenomU'])?>
-                    <?php if(htmlspecialchars($participant['IdU']) == $ID_user) echo " (vous)"; ?>
-                    </td>
-                </tr>
-            <?php endforeach;
-        }
-    }
-    else {
-        //Aucun planning poker n'es en cours
-        echo "<div> Aucun planning poker n'es en cours </div>";
-    }
+        <?php if ($RoleUser === 'SM') { ?>
+        <form method="post">
+            <input type="submit" name="stopBtn" class="button-blue" value="Arrêter le vote">
+        </form>
+        <br>
+        <?php }
+        } else 
+        {
+        if ($RoleUser === 'SM') 
+        { ?>
+        <form method="post">
+            <input type="submit" name="beginBtn" class="button-blue" value="Commencer le vote">
+        </form>
+        <br>
+        <?php }
+        } ?>
 
-    ?>
+        <?php if ($RoleUser === 'SM') 
+        { ?>
+        <?php 
+        }
+        } else 
+        {
+            echo "<div>Aucun planning poker n'est en cours.</div>";
+        }
+        ?>
+    </div>
 </body>
+
 </html>

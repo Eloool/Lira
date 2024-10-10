@@ -185,3 +185,66 @@ html, body {
     border-radius: 5px;
 }
 
+/* Stylisation pour les détails de la tâche */
+.task-details {
+    background-color: #e6f7ff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.task-details p {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+.task-details p strong {
+    color: #0056b3;
+}
+
+.table-container {
+    margin: 20px auto;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.styled-table th, .styled-table td {
+    text-align: left;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+}
+
+.styled-table thead th {
+    background-color: #0056b3;
+    color: white;
+    font-weight: bold;
+}
+
+.styled-table tbody td {
+    background-color: #f0f8ff;
+}
+
+.styled-table tbody tr:nth-child(even) td {
+    background-color: #e6f7ff;
+}
+
+/* Stylisation pour la liste des participants */
+.styled-table ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.styled-table li {
+    font-size: 14px;
+    color: #333;
+}
