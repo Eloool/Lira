@@ -21,18 +21,22 @@ SET time_zone = "+00:00";
 -- Base de données : `agiletools`
 --
 
-DELIMITER $$
+
+
 --
--- Procédures
+-- Fonction
 --
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `Velo_Total_Sprint` (IN `Id_Sprint` INT)   BEGIN
-SELECT SUM(IdCout)
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` FUNCTION `Velo_Total_Sprint`(`Id_Sprint` INT) RETURNS int(11)
+BEGIN
+DECLARE var INT;
+SELECT SUM(IdCout) INTO var
 FROM sprintbacklog
 INNER JOIN taches ON sprintbacklog.IdT=taches.IdT
 WHERE IdS=Id_Sprint AND IdCout!='?' AND IdCout!='999';
+RETURN var;
 END$$
-
 DELIMITER ;
 
 -- --------------------------------------------------------
