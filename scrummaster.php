@@ -51,6 +51,7 @@
             }
         }
         include "Include/Ajout_MF.php";
+        include "creation_pb.php";
         ?>
 
         <?php
