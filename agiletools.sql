@@ -335,7 +335,7 @@ CREATE TABLE `utilisateurs` (
 -- Déchargement des données de la table `utilisateurs`
 --
 
-INSERT INTO `utilisateurs` (`IdU`, `NomU`, `PrenomU`, `MotDePasseU`, `SpecialiteU`, `is_admin`, `is_connected`) VALUES
+INSERT INTO `utilisateurs` (`IdU`, `NomU`, `PrenomU`, `MotDePasseU`, `SpecialiteU`, `is_admin` ) VALUES
 (1, 'admin', 'admin', '$2b$12$rXsIUK8GzjYNl7aSxYrz8.eyAINBNjXz2mHNyVWsWzEYAbcBh6Z0q', 'Polyvalent', 1),
 (2, 'Dupont', 'Jean', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Développeur', 0),
 (3, 'Martin', 'Paul', '$2b$12$G3zl2VAaorY0/VyxGD73ie.13HQa.DQrUTSgcz9rzP4EacyWuLyvO', 'Modeleur', 0),

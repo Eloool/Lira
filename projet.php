@@ -25,7 +25,6 @@ if ($project_id <= 0) {
 if(!is_user_in_project($conn,$ID_user,$project_id)){
     header("Location: accueil.php");
 }
-echo is_user_in_project($conn,$ID_user,$project_id);
 $sql = "SELECT NomEq
             FROM equipesprj
             WHERE IdEq = ?";

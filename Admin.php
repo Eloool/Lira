@@ -26,7 +26,7 @@ if (!isset($_SESSION['token'])) {
 
 
 mysqli_report(MYSQLI_REPORT_OFF); 
-$mysqli = @new mysqli("localhost", "root", "", "lira");
+$mysqli = @new mysqli("localhost", "root", "", "agiletools");
 // vérifie la connexion (connect_errno renvoie un numéro d'erreur, 0 si pas d'erreur)
 if ( $mysqli->connect_errno ) {
         echo "Impossible de se connecter à MySQL: errNum=" . $mysqli->connect_errno .
